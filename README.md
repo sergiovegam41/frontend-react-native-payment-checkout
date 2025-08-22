@@ -1,1 +1,1 @@
-# frontend-nest-payment-checkout
+# frontend-react-native-payment-checkout
