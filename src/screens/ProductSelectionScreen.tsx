@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -14,6 +14,7 @@ import { RootStackParamList } from '../types/navigation';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { removeFromCart, updateCartItemQuantity, clearCart } from '../store/slices/cartSlice';
 import { CartItem } from '../types/api';
+import CustomModal from '../components/CustomModal';
 
 type ProductSelectionNavigationProp = StackNavigationProp<RootStackParamList, 'ProductSelection'>;
 
@@ -24,6 +25,13 @@ interface Props {
 const ProductSelectionScreen: React.FC<Props> = ({ navigation }) => {
   const dispatch = useAppDispatch();
   const { items, totalItems, totalAmount } = useAppSelector(state => state.cart);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalConfig, setModalConfig] = useState({
+    title: '',
+    message: '',
+    icon: '',
+    buttons: [] as any[]
+  });
 
   const formatPrice = (price: string): string => {
     const numPrice = parseFloat(price);
@@ -50,10 +58,11 @@ const ProductSelectionScreen: React.FC<Props> = ({ navigation }) => {
     const item = items.find(item => item.product.id === itemId);
     if (!item) return;
 
-    Alert.alert(
-      'Eliminar producto',
-      `¿Estás seguro de que quieres eliminar ${item.product.name} del carrito?`,
-      [
+    setModalConfig({
+      title: 'Eliminar producto',
+      message: `¿Estás seguro de que quieres eliminar ${item.product.name} del carrito?`,
+      icon: '🗑️',
+      buttons: [
         { text: 'Cancelar', style: 'cancel' },
         { 
           text: 'Eliminar', 
@@ -61,14 +70,16 @@ const ProductSelectionScreen: React.FC<Props> = ({ navigation }) => {
           onPress: () => dispatch(removeFromCart(itemId))
         }
       ]
-    );
+    });
+    setModalVisible(true);
   };
 
   const handleClearCart = () => {
-    Alert.alert(
-      'Vaciar carrito',
-      '¿Estás seguro de que quieres vaciar todo el carrito?',
-      [
+    setModalConfig({
+      title: 'Vaciar carrito',
+      message: '¿Estás seguro de que quieres vaciar todo el carrito?',
+      icon: '🗑️',
+      buttons: [
         { text: 'Cancelar', style: 'cancel' },
         { 
           text: 'Vaciar', 
@@ -76,12 +87,19 @@ const ProductSelectionScreen: React.FC<Props> = ({ navigation }) => {
           onPress: () => dispatch(clearCart())
         }
       ]
-    );
+    });
+    setModalVisible(true);
   };
 
   const handleCheckout = () => {
     if (items.length === 0) {
-      Alert.alert('Carrito vacío', 'Agrega productos al carrito antes de continuar');
+      setModalConfig({
+        title: 'Carrito vacío',
+        message: 'Agrega productos al carrito antes de continuar',
+        icon: '🛒',
+        buttons: [{ text: 'OK' }]
+      });
+      setModalVisible(true);
       return;
     }
     navigation.navigate('Checkout');
@@ -223,6 +241,15 @@ const ProductSelectionScreen: React.FC<Props> = ({ navigation }) => {
           </View>
         </>
       )}
+      
+      <CustomModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        title={modalConfig.title}
+        message={modalConfig.message}
+        icon={modalConfig.icon}
+        buttons={modalConfig.buttons}
+      />
     </SafeAreaView>
   );
 };

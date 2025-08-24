@@ -18,6 +18,7 @@ import { Product } from '../types/api';
 
 import ImageGallery from '../components/ImageGallery';
 import LoadingIndicator from '../components/LoadingIndicator';
+import CustomModal from '../components/CustomModal';
 
 type ProductDetailNavigationProp = StackNavigationProp<RootStackParamList, 'ProductDetail'>;
 type ProductDetailRouteProp = RouteProp<RootStackParamList, 'ProductDetail'>;
@@ -38,6 +39,13 @@ const ProductDetailScreen: React.FC<Props> = ({ navigation, route }) => {
   const [product, setProduct] = useState<Product | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalConfig, setModalConfig] = useState({
+    title: '',
+    message: '',
+    icon: '',
+    buttons: [] as any[]
+  });
 
   useEffect(() => {
     // Find product in the Redux store (from products list)
@@ -79,12 +87,18 @@ const ProductDetailScreen: React.FC<Props> = ({ navigation, route }) => {
     }
   };
 
-  const handleAddToCart = () => {
-    if (!product) return;
+  const addProductToCart = () => {
+    if (!product) return false;
 
     if (product.stock < quantity) {
-      Alert.alert('Stock insuficiente', 'No hay suficientes unidades disponibles');
-      return;
+      setModalConfig({
+        title: 'Stock insuficiente',
+        message: 'No hay suficientes unidades disponibles',
+        icon: '⚠️',
+        buttons: [{ text: 'OK' }]
+      });
+      setModalVisible(true);
+      return false;
     }
 
     // Check if product is already in cart
@@ -92,11 +106,14 @@ const ProductDetailScreen: React.FC<Props> = ({ navigation, route }) => {
     const totalQuantityInCart = existingItem ? existingItem.quantity : 0;
     
     if (totalQuantityInCart + quantity > product.stock) {
-      Alert.alert(
-        'Stock insuficiente', 
-        `Ya tienes ${totalQuantityInCart} unidades en el carrito. Solo puedes agregar ${product.stock - totalQuantityInCart} más.`
-      );
-      return;
+      setModalConfig({
+        title: 'Stock insuficiente',
+        message: `Ya tienes ${totalQuantityInCart} unidades en el carrito. Solo puedes agregar ${product.stock - totalQuantityInCart} más.`,
+        icon: '⚠️',
+        buttons: [{ text: 'OK' }]
+      });
+      setModalVisible(true);
+      return false;
     }
 
     // Add to cart multiple times based on quantity
@@ -104,26 +121,34 @@ const ProductDetailScreen: React.FC<Props> = ({ navigation, route }) => {
       dispatch(addToCart(product));
     }
 
-    Alert.alert(
-      '¡Agregado al carrito!',
-      `${quantity} ${quantity === 1 ? 'unidad' : 'unidades'} de ${product.name} agregadas al carrito`,
-      [
+    return true;
+  };
+
+  const handleAddToCart = () => {
+    const success = addProductToCart();
+    if (!success) return;
+
+    setModalConfig({
+      title: '¡Agregado al carrito!',
+      message: `${quantity} ${quantity === 1 ? 'unidad' : 'unidades'} de ${product!.name} agregadas al carrito`,
+      icon: '✅',
+      buttons: [
         { text: 'Seguir comprando', style: 'cancel' },
         { text: 'Ir al carrito', onPress: () => navigation.navigate('ProductSelection') }
       ]
-    );
+    });
+    setModalVisible(true);
 
     setQuantity(1); // Reset quantity after adding
   };
 
   const handleBuyNow = () => {
-    if (!product) return;
-    
-    handleAddToCart();
-    // Navigate directly to checkout
-    setTimeout(() => {
-      navigation.navigate('Checkout');
-    }, 100);
+    const success = addProductToCart();
+    if (!success) return;
+
+    setQuantity(1); // Reset quantity after adding
+    // Navigate directly to checkout without modal
+    navigation.navigate('Checkout');
   };
 
   if (loading) {
@@ -163,9 +188,6 @@ const ProductDetailScreen: React.FC<Props> = ({ navigation, route }) => {
             <Text style={styles.price}>{formatPrice(product.price)}</Text>
           </View>
 
-          <View style={styles.skuContainer}>
-            <Text style={styles.sku}>SKU: {product.sku}</Text>
-          </View>
 
           <View style={styles.stockContainer}>
             <Text style={[styles.stockText, { color: stockStatus.color }]}>
@@ -204,24 +226,6 @@ const ProductDetailScreen: React.FC<Props> = ({ navigation, route }) => {
             </View>
           )}
 
-          {/* Product Details */}
-          <View style={styles.detailsContainer}>
-            <Text style={styles.detailsTitle}>Detalles del producto</Text>
-            <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Stock disponible:</Text>
-              <Text style={styles.detailValue}>{product.stock} unidades</Text>
-            </View>
-            <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Estado:</Text>
-              <Text style={styles.detailValue}>{product.isActive ? 'Activo' : 'Inactivo'}</Text>
-            </View>
-            <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Creado:</Text>
-              <Text style={styles.detailValue}>
-                {new Date(product.createdAt).toLocaleDateString('es-CO')}
-              </Text>
-            </View>
-          </View>
         </View>
       </ScrollView>
 
@@ -239,6 +243,15 @@ const ProductDetailScreen: React.FC<Props> = ({ navigation, route }) => {
           </TouchableOpacity>
         </View>
       )}
+      
+      <CustomModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        title={modalConfig.title}
+        message={modalConfig.message}
+        icon={modalConfig.icon}
+        buttons={modalConfig.buttons}
+      />
     </SafeAreaView>
   );
 };
@@ -265,14 +278,6 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: 'bold',
     color: '#2E7D32',
-  },
-  skuContainer: {
-    marginBottom: 12,
-  },
-  sku: {
-    fontSize: 14,
-    color: '#666666',
-    fontFamily: 'monospace',
   },
   stockContainer: {
     marginBottom: 20,
@@ -334,35 +339,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     minWidth: 30,
     textAlign: 'center',
-  },
-  detailsContainer: {
-    marginBottom: 24,
-    padding: 16,
-    backgroundColor: '#F8F9FA',
-    borderRadius: 12,
-  },
-  detailsTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333333',
-    marginBottom: 12,
-  },
-  detailRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-  },
-  detailLabel: {
-    fontSize: 14,
-    color: '#666666',
-    flex: 1,
-  },
-  detailValue: {
-    fontSize: 14,
-    color: '#333333',
-    fontWeight: '500',
-    textAlign: 'right',
-    flex: 1,
   },
   bottomActions: {
     flexDirection: 'row',

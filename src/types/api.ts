@@ -33,7 +33,7 @@ export interface ProductsResponse {
 
 export interface ProductsApiParams {
   cursor?: string;
-  direction?: 'next' | 'prev';
+  direction?: 'forward' | 'backward';
   take?: number;
 }
 

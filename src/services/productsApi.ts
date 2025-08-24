@@ -16,8 +16,6 @@ class ProductsApiService {
     
     if (params?.take) {
       urlParams.append('take', params.take.toString());
-    } else {
-      urlParams.append('take', '10'); // Default page size
     }
 
     const url = `${API_BASE_URL}/product?${urlParams.toString()}`;

@@ -282,10 +282,10 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    gap: 12,
   },
   halfWidth: {
     flex: 1,
-    marginHorizontal: 4,
   },
   cardTypeInfo: {
     backgroundColor: '#E8F5E8',

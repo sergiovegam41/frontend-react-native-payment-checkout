@@ -15,8 +15,9 @@ interface Props {
 }
 
 const { width } = Dimensions.get('window');
-const CARD_MARGIN = 12;
-const CARD_WIDTH = (width - CARD_MARGIN * 3) / 2;
+const CARD_MARGIN = 16;
+const HORIZONTAL_CARD_MARGIN = 12; // 6px on each side (increased by ~50%)
+const CARD_WIDTH = (width - CARD_MARGIN * 2 - HORIZONTAL_CARD_MARGIN * 2) / 2;
 
 const ProductCard: React.FC<Props> = ({ product, onPress }) => {
   const mainImage = product.images.find(img => img.isMain) || product.images[0];
@@ -70,24 +71,18 @@ const ProductCard: React.FC<Props> = ({ product, onPress }) => {
           {product.name}
         </Text>
         
-        <Text style={styles.description} numberOfLines={2}>
+        <Text style={styles.description} numberOfLines={3}>
           {product.description}
         </Text>
 
-        <View style={styles.priceContainer}>
+        <View style={styles.footer}>
           <Text style={styles.price}>
             {formatPrice(product.price)}
           </Text>
-        </View>
-
-        <View style={styles.stockContainer}>
+          
           <Text style={[styles.stockText, { color: stockStatus.color }]}>
             {stockStatus.text}
           </Text>
-        </View>
-
-        <View style={styles.skuContainer}>
-          <Text style={styles.sku}>SKU: {product.sku}</Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -97,9 +92,11 @@ const ProductCard: React.FC<Props> = ({ product, onPress }) => {
 const styles = StyleSheet.create({
   card: {
     width: CARD_WIDTH,
+    height: CARD_WIDTH * 1.65, // Increased height for 3 lines in product name
     backgroundColor: '#FFFFFF',
     borderRadius: 12,
     marginBottom: 16,
+    marginHorizontal: 6, // Increased horizontal margin
     elevation: 3,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -108,7 +105,7 @@ const styles = StyleSheet.create({
   imageContainer: {
     position: 'relative',
     width: '100%',
-    height: CARD_WIDTH * 0.75,
+    height: CARD_WIDTH * 0.6, // Slightly reduced image height
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
     overflow: 'hidden',
@@ -133,43 +130,43 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   content: {
+    flex: 1,
     padding: 12,
+    justifyContent: 'space-between',
   },
   name: {
     fontSize: 14,
     fontWeight: 'bold',
     color: '#333333',
-    marginBottom: 4,
+    marginBottom: 6,
     lineHeight: 18,
+    height: 36, // Fixed height for exactly 2 lines (18px * 2)
   },
   description: {
     fontSize: 12,
     color: '#666666',
-    marginBottom: 8,
     lineHeight: 16,
-  },
-  priceContainer: {
+    height: 48, // Fixed height for exactly 3 lines (16px * 3)
     marginBottom: 8,
+  },
+  footer: {
+    marginTop: 'auto', // Push to bottom
   },
   price: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#2E7D32',
-  },
-  stockContainer: {
-    marginBottom: 4,
+    marginBottom: 6,
   },
   stockText: {
     fontSize: 11,
     fontWeight: '600',
-  },
-  skuContainer: {
-    marginTop: 4,
-  },
-  sku: {
-    fontSize: 10,
-    color: '#999999',
-    fontFamily: 'monospace',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    backgroundColor: 'rgba(46, 125, 50, 0.1)',
+    borderRadius: 4,
+    textAlign: 'center',
+    alignSelf: 'flex-start', // Prevent stretching
   },
 });
 

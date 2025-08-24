@@ -34,7 +34,7 @@ interface Props {
 }
 
 const { width } = Dimensions.get('window');
-const CARD_MARGIN = 12;
+const CARD_MARGIN = 16;
 
 const ProductsHomeScreen: React.FC<Props> = ({ navigation }) => {
   const dispatch = useAppDispatch();
@@ -99,7 +99,7 @@ const ProductsHomeScreen: React.FC<Props> = ({ navigation }) => {
 
       const response = await productsApi.getProducts({
         cursor: pagination.nextCursor,
-        direction: 'next',
+        direction: 'forward',
         take: 10,
       });
 
@@ -134,14 +134,8 @@ const ProductsHomeScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   // Render product item
-  const renderProduct = ({ item, index }: { item: Product; index: number }) => (
-    <View style={[
-      styles.cardContainer,
-      {
-        marginLeft: index % 2 === 0 ? CARD_MARGIN : CARD_MARGIN / 2,
-        marginRight: index % 2 === 0 ? CARD_MARGIN / 2 : CARD_MARGIN,
-      }
-    ]}>
+  const renderProduct = ({ item }: { item: Product }) => (
+    <View style={styles.cardContainer}>
       <ProductCard product={item} onPress={handleProductPress} />
     </View>
   );
@@ -235,14 +229,16 @@ const styles = StyleSheet.create({
     color: '#666666',
   },
   listContent: {
-    padding: CARD_MARGIN,
+    paddingHorizontal: CARD_MARGIN,
+    paddingTop: CARD_MARGIN,
     paddingBottom: 20,
   },
   row: {
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
   },
   cardContainer: {
     flex: 1,
+    alignItems: 'center',
   },
   emptyContainer: {
     flex: 1,
