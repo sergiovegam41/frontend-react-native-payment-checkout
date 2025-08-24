@@ -1,10 +1,12 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { RootStackParamList } from '../types/navigation';
+import CartBadge from '../components/CartBadge';
 
 // Import screens (will create them next)
 import SplashScreen from '../screens/SplashScreen';
 import ProductsHomeScreen from '../screens/ProductsHomeScreen';
+import ProductDetailScreen from '../screens/ProductDetailScreen';
 import ProductSelectionScreen from '../screens/ProductSelectionScreen';
 import CheckoutScreen from '../screens/CheckoutScreen';
 import CreditCardFormScreen from '../screens/CreditCardFormScreen';
@@ -35,12 +37,23 @@ const AppNavigator: React.FC = () => {
       <Stack.Screen 
         name="ProductsHome" 
         component={ProductsHomeScreen}
-        options={{ title: 'Productos' }}
+        options={{ 
+          title: 'Productos',
+          headerRight: () => <CartBadge />
+        }}
+      />
+      <Stack.Screen 
+        name="ProductDetail" 
+        component={ProductDetailScreen}
+        options={{ 
+          title: 'Detalle del Producto',
+          headerRight: () => <CartBadge />
+        }}
       />
       <Stack.Screen 
         name="ProductSelection" 
         component={ProductSelectionScreen}
-        options={{ title: 'Seleccionar Productos' }}
+        options={{ title: 'Mi Carrito' }}
       />
       <Stack.Screen 
         name="Checkout" 

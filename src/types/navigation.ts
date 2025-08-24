@@ -1,6 +1,7 @@
 export type RootStackParamList = {
   Splash: undefined;
   ProductsHome: undefined;
+  ProductDetail: { productId: string };
   ProductSelection: undefined;
   Checkout: undefined;
   CreditCardForm: undefined;
