@@ -38,12 +38,10 @@ const ProductSelectionScreen: React.FC<Props> = ({ navigation }) => {
 
   const formatPrice = (price: string): string => {
     const numPrice = parseFloat(price);
-    return new Intl.NumberFormat('es-CO', {
-      style: 'currency',
-      currency: 'COP',
+    return `${new Intl.NumberFormat('es-CO', {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
-    }).format(numPrice);
+    }).format(numPrice)} COP`;
   };
 
   const handleQuantityChange = (itemId: string, increment: boolean) => {

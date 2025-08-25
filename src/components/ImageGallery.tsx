@@ -25,13 +25,17 @@ const ImageGallery: React.FC<Props> = ({ images, height = width * 0.8 }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const scrollRef = useRef<ScrollView>(null);
   const fadeAnim = useRef(new Animated.Value(1)).current;
+  const isScrolling = useRef(false);
 
   const sortedImages = images.sort((a, b) => a.position - b.position);
 
   const handleScroll = (event: any) => {
-    const scrollX = event.nativeEvent.contentOffset.x;
-    const index = Math.round(scrollX / width);
-    setActiveIndex(index);
+    // Only update index if user is manually scrolling, not from programmatic scroll
+    if (!isScrolling.current) {
+      const scrollX = event.nativeEvent.contentOffset.x;
+      const index = Math.round(scrollX / width);
+      setActiveIndex(index);
+    }
   };
 
   const handleScrollBegin = () => {
@@ -43,18 +47,28 @@ const ImageGallery: React.FC<Props> = ({ images, height = width * 0.8 }) => {
     }).start();
   };
 
-  const handleScrollEnd = () => {
+  const handleScrollEnd = (event: any) => {
+    // Reset scrolling flag and update index from final position
+    isScrolling.current = false;
+    const scrollX = event.nativeEvent.contentOffset.x;
+    const index = Math.round(scrollX / width);
+    setActiveIndex(index);
+    
     // Fade in when scrolling ends
     Animated.timing(fadeAnim, {
       toValue: 1,
-      duration: 5,
-      useNativeDriver: true,
+      duration: 150,
       easing: Easing.in(Easing.ease),
+      useNativeDriver: true,
     }).start();
   };
 
   const scrollToImage = (index: number) => {
+    // Set scrolling flag to prevent handleScroll interference
+    isScrolling.current = true;
+    // Set the active index immediately
     setActiveIndex(index);
+    // Scroll to the image position
     scrollRef.current?.scrollTo({
       x: index * width,
       animated: true,
@@ -251,7 +265,8 @@ const styles = StyleSheet.create({
   },
   thumbnailSection: {
     backgroundColor: '#F8F9FA',
-    paddingVertical: 12,
+    paddingTop: 12,
+    paddingBottom: 0,
   },
   thumbnailStrip: {
     height: 60,

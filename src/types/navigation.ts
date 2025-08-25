@@ -1,3 +1,5 @@
+import { CheckoutWithCardResponse } from '../services/paymentApi';
+
 export type RootStackParamList = {
   Splash: undefined;
   ProductsHome: undefined;
@@ -6,7 +8,7 @@ export type RootStackParamList = {
   Checkout: undefined;
   CreditCardForm: undefined;
   PaymentSummary: undefined;
-  TransactionResult: { transactionId: string };
+  TransactionResult: { transactionData: CheckoutWithCardResponse };
 };
 
 export type ScreenName = keyof RootStackParamList;

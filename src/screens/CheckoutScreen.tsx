@@ -17,7 +17,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
   const { items, totalAmount } = useSelector((state: RootState) => state.cart);
 
   const formatPrice = (price: string) => {
-    return `$${parseFloat(price).toLocaleString('es-CO', { minimumFractionDigits: 2 })}`;
+    return `${parseFloat(price).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} COP`;
   };
 
   const renderCartItem = ({ item }: { item: CartItem }) => {

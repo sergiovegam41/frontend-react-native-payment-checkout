@@ -31,7 +31,7 @@ export const Colors = {
     warning: '#DDFD60',     // Bright yellow - pending, caution
     error: '#F26464',       // Soft red - low stock, errors
     info: '#99d1fc',        // Clean blue - information
-    pending: '#DDFD60',     // Bright yellow - processing states
+    pending: '#FF9F40',     // Orange - processing states (more visible)
   },
 
   // Neutral Colors - Clean Grays

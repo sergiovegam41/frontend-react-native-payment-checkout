@@ -7,7 +7,133 @@ import {
 } from '../types/payment';
 import { BaseApiService, API_CONFIG } from './apiConfig';
 
+interface CheckoutWithCardRequest {
+  items: Array<{
+    id: string;
+    quantity: number;
+  }>;
+  customer_email: string;
+  card_data: {
+    number: string;
+    exp_month: string;
+    exp_year: string;
+    cvc: string;
+    card_holder: string;
+  };
+}
+
+interface CheckoutWithCardResponse {
+  checkout_id: string;
+  items: Array<{
+    product_id: string;
+    name: string;
+    unit_price: number;
+    quantity: number;
+    total_price: number;
+  }>;
+  subtotal: number;
+  taxes: number;
+  total: number;
+  currency: string;
+  transaction_id: string;
+  transaction_status: 'PENDING' | 'APPROVED' | 'DECLINED' | 'ERROR';
+  payment_method_info: {
+    type: string;
+    last_four: string;
+    card_holder: string;
+    brand?: string;
+  };
+  payment_url?: string;
+}
+
 class PaymentApiService extends BaseApiService {
+
+  /**
+   * Process payment with card - New API endpoint
+   */
+  async checkoutWithCard(request: CheckoutWithCardRequest): Promise<CheckoutWithCardResponse> {
+    try {
+      const url = 'https://backend-nest-payment-checkout.ondeploy.space/api/v1/product-checkout';
+      console.log('Making request to:', url);
+      console.log('Request payload:', JSON.stringify(request, null, 2));
+      
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify(request),
+      });
+
+      console.log('Response status:', response.status);
+      console.log('Response headers:', response.headers);
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        console.error('Error response:', errorData);
+        
+        // Extract meaningful error message
+        let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+        if (errorData?.error?.message) {
+          errorMessage = errorData.error.message;
+        } else if (errorData?.message) {
+          errorMessage = errorData.message;
+        }
+        
+        throw new Error(errorMessage);
+      }
+
+      const responseData = await response.json();
+      console.log('Response data:', responseData);
+      
+      return responseData;
+    } catch (error) {
+      console.error('Checkout with card error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get checkout status by checkout_id
+   */
+  async getCheckoutStatus(checkoutId: string): Promise<CheckoutStatusResponse> {
+    try {
+      const url = `https://backend-nest-payment-checkout.ondeploy.space/api/v1/product-checkout/${checkoutId}/status`;
+      console.log('Getting checkout status from:', url);
+      
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
+
+      console.log('Status response status:', response.status);
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        console.error('Status error response:', errorData);
+        
+        let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+        if (errorData?.error?.message) {
+          errorMessage = errorData.error.message;
+        } else if (errorData?.message) {
+          errorMessage = errorData.message;
+        }
+        
+        throw new Error(errorMessage);
+      }
+
+      const responseData = await response.json();
+      console.log('Status response data:', responseData);
+      
+      return responseData;
+    } catch (error) {
+      console.error('Get checkout status error:', error);
+      throw error;
+    }
+  }
 
   /**
    * Create a new transaction
@@ -253,3 +379,11 @@ class PaymentApiService extends BaseApiService {
 }
 
 export const paymentApi = new PaymentApiService();
+
+// Export types
+interface CheckoutStatusResponse {
+  status: 'PAID' | 'FAILED' | 'PENDING';
+  total: number;
+}
+
+export type { CheckoutWithCardRequest, CheckoutWithCardResponse, CheckoutStatusResponse };

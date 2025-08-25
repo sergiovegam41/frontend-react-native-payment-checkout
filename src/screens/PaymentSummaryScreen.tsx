@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, Modal } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useSelector, useDispatch } from 'react-redux';
@@ -6,13 +6,7 @@ import { RootState } from '../store/store';
 import { RootStackParamList } from '../types/navigation';
 import { CartItem } from '../types/api';
 import { clearCart } from '../store/slices/cartSlice';
-import { 
-  createTransaction, 
-  checkTransactionStatus, 
-  clearCurrentTransaction 
-} from '../store/slices/paymentSlice';
-import { paymentApi } from '../services/paymentApi';
-import { ENV } from '../config/environment';
+import { paymentApi, CheckoutWithCardResponse } from '../services/paymentApi';
 import LoadingIndicator from '../components/LoadingIndicator';
 import CustomModal from '../components/CustomModal';
 import { Theme, createStyle } from '../theme';
@@ -26,8 +20,9 @@ interface Props {
 const PaymentSummaryScreen: React.FC<Props> = ({ navigation }) => {
   const dispatch = useDispatch();
   const { items, totalAmount } = useSelector((state: RootState) => state.cart);
-  const { cardData, currentTransaction, isProcessing, error } = useSelector((state: RootState) => state.payment);
+  const { cardData } = useSelector((state: RootState) => state.payment);
   const [showModal, setShowModal] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [modalConfig, setModalConfig] = useState({
     title: '',
     message: '',
@@ -36,7 +31,7 @@ const PaymentSummaryScreen: React.FC<Props> = ({ navigation }) => {
   });
 
   const formatPrice = (price: string) => {
-    return `$${parseFloat(price).toLocaleString('es-CO', { minimumFractionDigits: 2 })}`;
+    return `${parseFloat(price).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} COP`;
   };
 
   const renderCartItem = ({ item }: { item: CartItem }) => {
@@ -58,108 +53,70 @@ const PaymentSummaryScreen: React.FC<Props> = ({ navigation }) => {
       setModalConfig({
         title: 'Error',
         message: 'Faltan datos para procesar el pago',
-        icon: 'alert-circle-outline',
+        icon: '⚠️',
         buttons: [{ text: 'OK' }]
       });
       setShowModal(true);
       return;
     }
 
+    setIsProcessing(true);
+    setModalConfig({
+      title: 'Procesando...',
+      message: 'Procesando tu pago...',
+      icon: '⏳',
+      buttons: []
+    });
     setShowModal(true);
 
-    // Prepare transaction request
-    const transactionRequest = {
-      amount_in_cents: paymentApi.formatAmountToCents(totalAmount),
-      currency: 'COP' as const,
-      customer_email: 'customer@example.com', // TODO: Get from user profile
-      reference: paymentApi.generateTransactionReference(),
-      card_info: {
-        number: cardData.number.replace(/\s/g, ''),
-        cvc: cardData.cvv,
-        exp_month: cardData.expirationMonth.padStart(2, '0'),
-        exp_year: cardData.expirationYear,
-        card_holder: cardData.holderName.toUpperCase(),
-      },
-      customer_data: {
-        email: 'customer@example.com',
-        full_name: cardData.holderName,
-        phone_number: '+573001234567',
-        legal_id: '12345678',
-        legal_id_type: 'CC' as const,
-      },
-    };
-
     try {
-      const result = await dispatch(createTransaction(transactionRequest));
-      
-      if (createTransaction.fulfilled.match(result)) {
-        setShowModal(false);
-        
-        if (result.payload.success) {
-          // Clear cart on successful transaction creation
-          dispatch(clearCart());
-          
-          // Navigate to transaction result with the transaction ID
-          navigation.replace('TransactionResult', { 
-            transactionId: result.payload.transaction.id || '' 
-          });
-        } else {
-          // Handle transaction creation failure
-          setModalConfig({
-            title: 'Error de Pago',
-            message: result.payload.error?.message || 'No se pudo procesar tu pago',
-            icon: 'close-circle-outline',
-            buttons: [{ text: 'OK' }]
-          });
-          setShowModal(true);
+      // Prepare checkout request for new API
+      const checkoutRequest = {
+        items: items.map(item => ({
+          id: item.product.id,
+          quantity: item.quantity
+        })),
+        customer_email: 'cliente@ejemplo.com', // TODO: Get from user profile
+        card_data: {
+          number: cardData.number.replace(/\s/g, ''), // Remove all spaces
+          exp_month: cardData.expirationMonth.padStart(2, '0'), // Ensure 2 digits
+          exp_year: cardData.expirationYear.length > 2 ? cardData.expirationYear.slice(-2) : cardData.expirationYear, // Only last 2 digits
+          cvc: cardData.cvv,
+          card_holder: cardData.holderName.toUpperCase(),
         }
-      } else {
-        // Handle rejected promise
-        setShowModal(false);
-        const errorMessage = result.payload?.message || 'Error desconocido';
-        setModalConfig({
-          title: 'Error de Pago',
-          message: errorMessage,
-          icon: 'close-circle-outline',
-          buttons: [{ text: 'OK' }]
-        });
-        setShowModal(true);
-      }
-    } catch (error: any) {
+      };
+
+      // Call the new checkout API
+      const response: CheckoutWithCardResponse = await paymentApi.checkoutWithCard(checkoutRequest);
+      
+      // Clear cart on successful payment creation
+      dispatch(clearCart());
+      
+      setIsProcessing(false);
       setShowModal(false);
+      
+      // Navigate to result screen with payment data
+      navigation.replace('TransactionResult', { 
+        transactionData: response 
+      });
+      
+    } catch (error) {
+      console.error('Payment error:', error);
+      
+      setIsProcessing(false);
+      setShowModal(false);
+      
+      // Show error modal with generic message
       setModalConfig({
-        title: 'Error de Conexión',
-        message: 'No se pudo conectar con el servidor. Verifica tu conexión a internet.',
-        icon: 'wifi-outline',
+        title: 'Tarjeta Inválida',
+        message: 'La tarjeta utilizada no es válida. Por favor verifica los datos o intenta con otra tarjeta.',
+        icon: '❌',
         buttons: [{ text: 'OK' }]
       });
       setShowModal(true);
     }
   };
 
-  // Effect to handle transaction status updates
-  useEffect(() => {
-    if (currentTransaction && currentTransaction.status === 'PENDING' && currentTransaction.id) {
-      // Poll for transaction status updates
-      const interval = setInterval(async () => {
-        try {
-          await dispatch(checkTransactionStatus(currentTransaction.id!));
-        } catch (error) {
-          console.error('Error checking transaction status:', error);
-        }
-      }, ENV.PAYMENT.POLLING_INTERVAL);
-
-      // Clear interval after configured timeout
-      const timeout = setTimeout(() => {
-        clearInterval(interval);
-      }, ENV.PAYMENT.POLLING_TIMEOUT);
-
-      return () => {
-        clearInterval(interval);
-        clearTimeout(timeout);
-      };
-    }
-  }, [currentTransaction, dispatch]);
 
   return (
     <View style={styles.container}>

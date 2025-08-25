@@ -44,31 +44,20 @@ interface FormErrors {
 
 const CreditCardFormScreen: React.FC<Props> = ({ navigation }) => {
   const dispatch = useAppDispatch();
-  const currentCard = useAppSelector(state => state.payment.paymentData.creditCard);
+  const currentCard = useAppSelector(state => state.payment.cardData);
 
-  const [formData, setFormData] = useState<FormData>({
-    cardNumber: currentCard?.number || '',
-    holderName: currentCard?.holderName || '',
-    expirationMonth: currentCard?.expirationMonth || '',
-    expirationYear: currentCard?.expirationYear || '',
-    cvv: currentCard?.cvv || '',
-  });
-
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Generate fake data for testing
+  // Generate fake data for testing - Using valid test cards for the environment
   const generateFakeCardData = () => {
     const fakeCards = [
       {
-        number: '4111 1111 1111 1111', // VISA test card
+        number: '4242 4242 4242 4242', // Valid VISA test card
         holder: 'JUAN PEREZ',
         month: '12',
-        year: '26',
+        year: '25',
         cvv: '123',
       },
       {
-        number: '5555 5555 5555 4444', // MasterCard test card
+        number: '4111 1111 1111 1111', // Alternative VISA test card
         holder: 'MARIA GARCIA',
         month: '08',
         year: '25',
@@ -76,7 +65,39 @@ const CreditCardFormScreen: React.FC<Props> = ({ navigation }) => {
       },
     ];
     
-    const randomCard = fakeCards[Math.floor(Math.random() * fakeCards.length)];
+    return fakeCards[Math.floor(Math.random() * fakeCards.length)];
+  };
+
+  // Use fake card data as default
+  const getDefaultCardData = () => {
+    if (currentCard) {
+      return {
+        cardNumber: currentCard.number,
+        holderName: currentCard.holderName,
+        expirationMonth: currentCard.expirationMonth,
+        expirationYear: currentCard.expirationYear,
+        cvv: currentCard.cvv,
+      };
+    } else {
+      const defaultCard = generateFakeCardData();
+      return {
+        cardNumber: defaultCard.number,
+        holderName: defaultCard.holder,
+        expirationMonth: defaultCard.month,
+        expirationYear: defaultCard.year,
+        cvv: defaultCard.cvv,
+      };
+    }
+  };
+
+  const [formData, setFormData] = useState<FormData>(getDefaultCardData());
+
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Update form data with new fake card data
+  const updateWithFakeData = () => {
+    const randomCard = generateFakeCardData();
     
     setFormData({
       cardNumber: randomCard.number,
@@ -177,8 +198,14 @@ const CreditCardFormScreen: React.FC<Props> = ({ navigation }) => {
             Ingresa los datos de tu tarjeta de crédito de forma segura
           </Text>
 
+          <View style={styles.testCardInfo}>
+            <Text style={styles.testCardTitle}>💡 Para pruebas usa:</Text>
+            <Text style={styles.testCardNumber}>4242 4242 4242 4242</Text>
+            <Text style={styles.testCardDetails}>Fecha: 12/25 • CVV: 123</Text>
+          </View>
+
           <View style={styles.fakeDataContainer}>
-            <TouchableOpacity style={styles.fakeDataButton} onPress={generateFakeCardData}>
+            <TouchableOpacity style={styles.fakeDataButton} onPress={updateWithFakeData}>
               <View style={styles.fakeDataButtonContent}>
                 <Icon name="document-text-outline" size={16} color={Theme.colors.secondary.main} />
                 <Text style={styles.fakeDataButtonText}>Generar Datos de Prueba</Text>
@@ -332,6 +359,31 @@ const styles = StyleSheet.create({
     color: Theme.colors.text.secondary,
     textAlign: 'center',
     fontStyle: 'italic',
+  },
+  testCardInfo: {
+    backgroundColor: Theme.colors.accent.surface,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: Theme.colors.accent.main,
+  },
+  testCardTitle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: Theme.colors.text.primary,
+    marginBottom: 8,
+  },
+  testCardNumber: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: Theme.colors.accent.dark,
+    marginBottom: 4,
+    fontFamily: 'monospace',
+  },
+  testCardDetails: {
+    fontSize: 12,
+    color: Theme.colors.text.secondary,
   },
 });
 

@@ -60,21 +60,17 @@ const ProductDetailScreen: React.FC<Props> = ({ navigation, route }) => {
 
   const formatPrice = (price: string): string => {
     const numPrice = parseFloat(price);
-    return new Intl.NumberFormat('es-CO', {
-      style: 'currency',
-      currency: 'COP',
+    return `${new Intl.NumberFormat('es-CO', {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
-    }).format(numPrice);
+    }).format(numPrice)} COP`;
   };
 
   const getStockStatus = (stock: number): { text: string; color: string; available: boolean } => {
     if (stock === 0) {
       return { text: 'Agotado', color: '#D32F2F', available: false };
-    } else if (stock < 10) {
-      return { text: `Solo ${stock} disponibles`, color: '#F57C00', available: true };
     } else if (stock < 20) {
-      return { text: 'Pocas unidades disponibles', color: '#F57C00', available: true };
+      return { text: `Solo ${stock} disponibles`, color: '#F57C00', available: true };
     }
     return { text: 'En stock', color: '#2E7D32', available: true };
   };
@@ -184,25 +180,17 @@ const ProductDetailScreen: React.FC<Props> = ({ navigation, route }) => {
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Image Gallery */}
-        <ImageGallery images={product.images} height={width} />
+        {product.images && product.images.length > 0 ? (
+          <ImageGallery images={product.images} height={width} />
+        ) : (
+          <View style={styles.noImagePlaceholder} />
+        )}
 
         {/* Product Information */}
         <View style={styles.content}>
           <View style={styles.header}>
             <Text style={styles.name}>{product.name}</Text>
             <Text style={styles.price}>{formatPrice(product.price)}</Text>
-          </View>
-
-
-          <View style={styles.stockContainer}>
-            <Text style={[styles.stockText, { color: stockStatus.color }]}>
-              {stockStatus.text}
-            </Text>
-          </View>
-
-          <View style={styles.descriptionContainer}>
-            <Text style={styles.descriptionTitle}>Descripción</Text>
-            <Text style={styles.description}>{product.description}</Text>
           </View>
 
           {/* Quantity Selector */}
@@ -230,6 +218,17 @@ const ProductDetailScreen: React.FC<Props> = ({ navigation, route }) => {
               </View>
             </View>
           )}
+
+          <View style={styles.stockContainer}>
+            <Text style={[styles.stockText, { color: stockStatus.color }]}>
+              {stockStatus.text}
+            </Text>
+          </View>
+
+          <View style={styles.descriptionContainer}>
+            <Text style={styles.descriptionTitle}>Descripción</Text>
+            <Text style={styles.description}>{product.description}</Text>
+          </View>
 
         </View>
       </ScrollView>
@@ -264,18 +263,21 @@ const ProductDetailScreen: React.FC<Props> = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Theme.colors.background.primary, // Mint background
+    backgroundColor: '#F8F9FA',
   },
   content: {
     padding: 20,
+    paddingTop: 20,
   },
   header: {
-    marginBottom: 16,
+    marginTop: 0,
+    marginBottom: 0,
   },
   name: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#333333',
+    marginTop: 0,
     marginBottom: 8,
     lineHeight: 30,
   },
@@ -406,6 +408,10 @@ const styles = StyleSheet.create({
   },
   backButtonText: {
     ...createStyle.text.button('normal', 'primary'),
+  },
+  noImagePlaceholder: {
+    height: 20, // Pequeño espacio cuando no hay imágenes
+    backgroundColor: '#F8F9FA',
   },
 });
 
