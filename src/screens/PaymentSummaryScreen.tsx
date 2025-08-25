@@ -1,12 +1,19 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, Alert, Modal } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, Modal } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
 import { RootStackParamList } from '../types/navigation';
 import { CartItem } from '../types/api';
 import { clearCart } from '../store/slices/cartSlice';
+import { 
+  createTransaction, 
+  checkTransactionStatus, 
+  clearCurrentTransaction 
+} from '../store/slices/paymentSlice';
+import { paymentApi } from '../services/paymentApi';
 import LoadingIndicator from '../components/LoadingIndicator';
+import CustomModal from '../components/CustomModal';
 
 type PaymentSummaryNavigationProp = StackNavigationProp<RootStackParamList, 'PaymentSummary'>;
 
@@ -17,9 +24,14 @@ interface Props {
 const PaymentSummaryScreen: React.FC<Props> = ({ navigation }) => {
   const dispatch = useDispatch();
   const { items, totalAmount } = useSelector((state: RootState) => state.cart);
-  const { cardData } = useSelector((state: RootState) => state.payment);
-  const [isProcessing, setIsProcessing] = useState(false);
+  const { cardData, currentTransaction, isProcessing, error } = useSelector((state: RootState) => state.payment);
   const [showModal, setShowModal] = useState(false);
+  const [modalConfig, setModalConfig] = useState({
+    title: '',
+    message: '',
+    icon: '',
+    buttons: [] as any[]
+  });
 
   const formatPrice = (price: string) => {
     return `$${parseFloat(price).toLocaleString('es-CO', { minimumFractionDigits: 2 })}`;
@@ -40,35 +52,112 @@ const PaymentSummaryScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const handlePayment = async () => {
-    setIsProcessing(true);
+    if (!cardData || items.length === 0) {
+      setModalConfig({
+        title: 'Error',
+        message: 'Faltan datos para procesar el pago',
+        icon: '⚠️',
+        buttons: [{ text: 'OK' }]
+      });
+      setShowModal(true);
+      return;
+    }
+
     setShowModal(true);
 
+    // Prepare transaction request
+    const transactionRequest = {
+      amount_in_cents: paymentApi.formatAmountToCents(totalAmount),
+      currency: 'COP' as const,
+      customer_email: 'customer@example.com', // TODO: Get from user profile
+      reference: paymentApi.generateTransactionReference(),
+      card_info: {
+        number: cardData.number.replace(/\s/g, ''),
+        cvc: cardData.cvv,
+        exp_month: cardData.expirationMonth.padStart(2, '0'),
+        exp_year: cardData.expirationYear,
+        card_holder: cardData.holderName.toUpperCase(),
+      },
+      customer_data: {
+        email: 'customer@example.com',
+        full_name: cardData.holderName,
+        phone_number: '+573001234567',
+        legal_id: '12345678',
+        legal_id_type: 'CC' as const,
+      },
+    };
+
     try {
-      // Simular llamada a API de pago
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      const result = await dispatch(createTransaction(transactionRequest));
       
-      // Simular éxito o fallo aleatorio
-      const isSuccess = Math.random() > 0.3; // 70% éxito
-      
-      if (isSuccess) {
-        const transactionId = Date.now().toString();
-        dispatch(clearCart());
+      if (createTransaction.fulfilled.match(result)) {
         setShowModal(false);
-        navigation.replace('TransactionResult', { transactionId });
+        
+        if (result.payload.success) {
+          // Clear cart on successful transaction creation
+          dispatch(clearCart());
+          
+          // Navigate to transaction result with the transaction ID
+          navigation.replace('TransactionResult', { 
+            transactionId: result.payload.transaction.id || '' 
+          });
+        } else {
+          // Handle transaction creation failure
+          setModalConfig({
+            title: 'Error de Pago',
+            message: result.payload.error?.message || 'No se pudo procesar tu pago',
+            icon: '❌',
+            buttons: [{ text: 'OK' }]
+          });
+          setShowModal(true);
+        }
       } else {
-        throw new Error('Error procesando el pago');
+        // Handle rejected promise
+        setShowModal(false);
+        const errorMessage = result.payload?.message || 'Error desconocido';
+        setModalConfig({
+          title: 'Error de Pago',
+          message: errorMessage,
+          icon: '❌',
+          buttons: [{ text: 'OK' }]
+        });
+        setShowModal(true);
       }
-    } catch (error) {
+    } catch (error: any) {
       setShowModal(false);
-      Alert.alert(
-        'Error de Pago',
-        'No se pudo procesar tu pago. Por favor intenta nuevamente.',
-        [{ text: 'OK' }]
-      );
-    } finally {
-      setIsProcessing(false);
+      setModalConfig({
+        title: 'Error de Conexión',
+        message: 'No se pudo conectar con el servidor. Verifica tu conexión a internet.',
+        icon: '📡',
+        buttons: [{ text: 'OK' }]
+      });
+      setShowModal(true);
     }
   };
+
+  // Effect to handle transaction status updates
+  useEffect(() => {
+    if (currentTransaction && currentTransaction.status === 'PENDING' && currentTransaction.id) {
+      // Poll for transaction status updates
+      const interval = setInterval(async () => {
+        try {
+          await dispatch(checkTransactionStatus(currentTransaction.id!));
+        } catch (error) {
+          console.error('Error checking transaction status:', error);
+        }
+      }, 3000); // Check every 3 seconds
+
+      // Clear interval after 2 minutes
+      const timeout = setTimeout(() => {
+        clearInterval(interval);
+      }, 120000);
+
+      return () => {
+        clearInterval(interval);
+        clearTimeout(timeout);
+      };
+    }
+  }, [currentTransaction, dispatch]);
 
   return (
     <View style={styles.container}>
@@ -76,7 +165,7 @@ const PaymentSummaryScreen: React.FC<Props> = ({ navigation }) => {
         <Text style={styles.sectionTitle}>Método de Pago</Text>
         <View style={styles.cardInfo}>
           <Text style={styles.cardText}>**** **** **** {cardData?.number?.slice(-4) || '0000'}</Text>
-          <Text style={styles.cardText}>{cardData?.name || 'Nombre del titular'}</Text>
+          <Text style={styles.cardText}>{cardData?.holderName || 'Nombre del titular'}</Text>
         </View>
       </View>
 
@@ -108,8 +197,9 @@ const PaymentSummaryScreen: React.FC<Props> = ({ navigation }) => {
         </Text>
       </TouchableOpacity>
 
+      {/* Processing Modal */}
       <Modal
-        visible={showModal}
+        visible={showModal && isProcessing}
         transparent={true}
         animationType="fade"
       >
@@ -121,6 +211,16 @@ const PaymentSummaryScreen: React.FC<Props> = ({ navigation }) => {
           </View>
         </View>
       </Modal>
+
+      {/* Error/Success Modal */}
+      <CustomModal
+        visible={showModal && !isProcessing && modalConfig.title !== ''}
+        onClose={() => setShowModal(false)}
+        title={modalConfig.title}
+        message={modalConfig.message}
+        icon={modalConfig.icon}
+        buttons={modalConfig.buttons.length > 0 ? modalConfig.buttons : [{ text: 'OK' }]}
+      />
     </View>
   );
 };
@@ -162,10 +262,10 @@ const styles = StyleSheet.create({
   productsSection: {
     flex: 1,
     margin: 20,
-    marginTop: 30,
+    marginTop: 10,
   },
   cartList: {
-    maxHeight: 200,
+    flex: 1,
   },
   cartItem: {
     flexDirection: 'row',
