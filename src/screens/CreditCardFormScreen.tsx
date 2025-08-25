@@ -14,6 +14,8 @@ import { RootStackParamList } from '../types/navigation';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { setCreditCard } from '../store/slices/paymentSlice';
 import { detectCardType, validateCardNumber, validateCVV, validateExpiryDate } from '../utils/cardValidation';
+import { Theme, createStyle } from '../theme';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 import CreditCardInput from '../components/CreditCardInput';
 import FormInput from '../components/FormInput';
@@ -177,7 +179,10 @@ const CreditCardFormScreen: React.FC<Props> = ({ navigation }) => {
 
           <View style={styles.fakeDataContainer}>
             <TouchableOpacity style={styles.fakeDataButton} onPress={generateFakeCardData}>
-              <Text style={styles.fakeDataButtonText}>📝 Generar Datos de Prueba</Text>
+              <View style={styles.fakeDataButtonContent}>
+                <Icon name="document-text-outline" size={16} color={Theme.colors.secondary.main} />
+                <Text style={styles.fakeDataButtonText}>Generar Datos de Prueba</Text>
+              </View>
             </TouchableOpacity>
           </View>
 
@@ -238,9 +243,10 @@ const CreditCardFormScreen: React.FC<Props> = ({ navigation }) => {
             </Text>
           </TouchableOpacity>
 
-          <Text style={styles.securityNote}>
-            🔒 Tus datos están protegidos con encriptación de extremo a extremo
-          </Text>
+          <View style={styles.securityNoteContent}>
+            <Icon name="shield-checkmark-outline" size={16} color={Theme.colors.text.secondary} />
+            <Text style={styles.securityNote}>Tus datos están protegidos con encriptación de extremo a extremo</Text>
+          </View>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -250,7 +256,7 @@ const CreditCardFormScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: Theme.colors.background.secondary,
   },
   scrollView: {
     flex: 1,
@@ -260,7 +266,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 16,
-    color: '#666666',
+    color: Theme.colors.text.secondary,
     textAlign: 'center',
     marginBottom: 24,
     lineHeight: 22,
@@ -270,17 +276,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   fakeDataButton: {
-    backgroundColor: '#E3F2FD',
+    backgroundColor: Theme.colors.secondary.surface,
     paddingHorizontal: 16,
     paddingVertical: 8,
-    borderRadius: 20,
+    borderRadius: 999, // Maximally rounded
     borderWidth: 1,
-    borderColor: '#1976D2',
+    borderColor: Theme.colors.secondary.main,
+  },
+  fakeDataButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   fakeDataButtonText: {
-    color: '#1976D2',
+    color: Theme.colors.secondary.main,
     fontSize: 14,
     fontWeight: 'bold',
+    fontFamily: Theme.typography.fontFamily.primary,
   },
   row: {
     flexDirection: 'row',
@@ -292,33 +304,32 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   submitButton: {
-    backgroundColor: '#2E7D32',
+    ...createStyle.button('primary'),
     paddingVertical: 16,
-    borderRadius: 12,
     marginBottom: 16,
-    elevation: 3,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    // No shadows for clean Wompi design
   },
   submittingButton: {
-    backgroundColor: '#81C784',
+    backgroundColor: Theme.colors.primary.light,
   },
   disabledButton: {
-    backgroundColor: '#E0E0E0',
+    backgroundColor: Theme.colors.neutral.gray[300],
   },
   submitButtonText: {
-    color: '#ffffff',
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    ...createStyle.text.button('large', 'primary'),
   },
   disabledButtonText: {
-    color: '#999999',
+    color: Theme.colors.text.disabled,
+  },
+  securityNoteContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
   },
   securityNote: {
     fontSize: 12,
-    color: '#666666',
+    color: Theme.colors.text.secondary,
     textAlign: 'center',
     fontStyle: 'italic',
   },

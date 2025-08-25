@@ -16,6 +16,8 @@ import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { removeFromCart, updateCartItemQuantity, clearCart } from '../store/slices/cartSlice';
 import { CartItem } from '../types/api';
 import CustomModal from '../components/CustomModal';
+import { Theme, createStyle } from '../theme';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 type ProductSelectionNavigationProp = StackNavigationProp<RootStackParamList, 'ProductSelection'>;
 
@@ -62,7 +64,7 @@ const ProductSelectionScreen: React.FC<Props> = ({ navigation }) => {
     setModalConfig({
       title: 'Eliminar producto',
       message: `¿Estás seguro de que quieres eliminar ${item.product.name} del carrito?`,
-      icon: '🗑️',
+      icon: 'trash-outline',
       buttons: [
         { text: 'Cancelar', style: 'cancel' },
         { 
@@ -79,7 +81,7 @@ const ProductSelectionScreen: React.FC<Props> = ({ navigation }) => {
     setModalConfig({
       title: 'Vaciar carrito',
       message: '¿Estás seguro de que quieres vaciar todo el carrito?',
-      icon: '🗑️',
+      icon: 'trash-outline',
       buttons: [
         { text: 'Cancelar', style: 'cancel' },
         { 
@@ -97,7 +99,7 @@ const ProductSelectionScreen: React.FC<Props> = ({ navigation }) => {
       setModalConfig({
         title: 'Carrito vacío',
         message: 'Agrega productos al carrito antes de continuar',
-        icon: '🛒',
+        icon: 'cart-outline',
         buttons: [{ text: 'OK' }]
       });
       setModalVisible(true);
@@ -124,7 +126,7 @@ const ProductSelectionScreen: React.FC<Props> = ({ navigation }) => {
           />
         ) : (
           <View style={styles.imagePlaceholder}>
-            <Text style={styles.imagePlaceholderText}>📷</Text>
+            <Icon name="image-outline" size={24} color={Theme.colors.neutral.gray[500]} />
           </View>
         )}
       </View>
@@ -178,7 +180,9 @@ const ProductSelectionScreen: React.FC<Props> = ({ navigation }) => {
 
   const renderEmptyCart = () => (
     <View style={styles.emptyContainer}>
-      <Text style={styles.emptyIcon}>🛒</Text>
+      <View style={styles.emptyIconContainer}>
+        <Icon name="cart-outline" size={64} color={Theme.colors.primary.main} />
+      </View>
       <Text style={styles.emptyTitle}>Tu carrito está vacío</Text>
       <Text style={styles.emptyText}>
         Explora nuestros productos y agrega los que más te gusten
@@ -251,7 +255,7 @@ const ProductSelectionScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8F9FA',
+    backgroundColor: Theme.colors.background.primary, // Mint background
   },
   summaryRow: {
     paddingBottom: 8,
@@ -269,7 +273,7 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   cartItem: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Theme.colors.background.surface,
     flexDirection: 'row',
     padding: 16,
     marginHorizontal: 16,
@@ -293,17 +297,14 @@ const styles = StyleSheet.create({
   itemImage: {
     width: '100%',
     height: '100%',
-    backgroundColor: '#F5F5F5',
+    backgroundColor: Theme.colors.neutral.gray[100],
   },
   imagePlaceholder: {
     width: '100%',
     height: '100%',
-    backgroundColor: '#F5F5F5',
+    backgroundColor: Theme.colors.neutral.gray[100],
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  imagePlaceholderText: {
-    fontSize: 24,
   },
   itemDetails: {
     flex: 1,
@@ -340,12 +341,12 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: '#2E7D32',
+    backgroundColor: Theme.colors.primary.main,
     justifyContent: 'center',
     alignItems: 'center',
   },
   quantityButtonDisabled: {
-    backgroundColor: '#E0E0E0',
+    backgroundColor: Theme.colors.neutral.gray[300],
   },
   quantityButtonText: {
     fontSize: 16,
@@ -377,7 +378,7 @@ const styles = StyleSheet.create({
     color: '#333333',
   },
   bottomContainer: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Theme.colors.background.surface,
     borderTopWidth: 1,
     borderTopColor: '#E0E0E0',
     paddingHorizontal: 20,
@@ -405,7 +406,7 @@ const styles = StyleSheet.create({
   },
   continueButton: {
     flex: 1,
-    backgroundColor: '#E0E0E0',
+    backgroundColor: Theme.colors.neutral.gray[300],
     borderRadius: 12,
     paddingVertical: 14,
     justifyContent: 'center',
@@ -419,7 +420,7 @@ const styles = StyleSheet.create({
   },
   checkoutButton: {
     flex: 2,
-    backgroundColor: '#2E7D32',
+    backgroundColor: Theme.colors.primary.main,
     borderRadius: 12,
     paddingVertical: 14,
     justifyContent: 'center',
@@ -437,9 +438,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 40,
   },
-  emptyIcon: {
-    fontSize: 64,
+  emptyIconContainer: {
     marginBottom: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   emptyTitle: {
     fontSize: 24,
@@ -456,7 +458,7 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
   continueShoppingButton: {
-    backgroundColor: '#2E7D32',
+    backgroundColor: Theme.colors.primary.main,
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 8,

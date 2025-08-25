@@ -23,9 +23,11 @@ import {
 } from '../store/slices/productsSlice';
 import { productsApi } from '../services/productsApi';
 import { Product } from '../types/api';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 import ProductCard from '../components/ProductCard';
 import LoadingIndicator from '../components/LoadingIndicator';
+import { Theme, createStyle } from '../theme';
 
 type ProductsHomeNavigationProp = StackNavigationProp<RootStackParamList, 'ProductsHome'>;
 
@@ -159,7 +161,10 @@ const ProductsHomeScreen: React.FC<Props> = ({ navigation }) => {
     if (error) {
       return (
         <View style={styles.emptyContainer}>
-          <Text style={styles.errorTitle}>😞 Oops!</Text>
+          <View style={styles.errorTitleContainer}>
+            <Icon name="sad-outline" size={24} color={Theme.colors.text.secondary} />
+            <Text style={styles.errorTitle}>Oops!</Text>
+          </View>
           <Text style={styles.errorText}>{error}</Text>
         </View>
       );
@@ -167,7 +172,10 @@ const ProductsHomeScreen: React.FC<Props> = ({ navigation }) => {
 
     return (
       <View style={styles.emptyContainer}>
-        <Text style={styles.emptyTitle}>📦 No hay productos</Text>
+        <View style={styles.emptyTitleContainer}>
+          <Icon name="cube-outline" size={24} color={Theme.colors.text.secondary} />
+          <Text style={styles.emptyTitle}>No hay productos</Text>
+        </View>
         <Text style={styles.emptyText}>No se encontraron productos disponibles</Text>
       </View>
     );
@@ -201,12 +209,12 @@ const ProductsHomeScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8F9FA',
+    backgroundColor: Theme.colors.background.secondary, // Soft green background
   },
   listContent: {
     paddingHorizontal: CARD_MARGIN,
     paddingTop: CARD_MARGIN,
-    paddingBottom: 20,
+    paddingBottom: Theme.spacing.lg,
   },
   row: {
     justifyContent: 'space-around',
@@ -217,32 +225,42 @@ const styles = StyleSheet.create({
   },
   emptyContainer: {
     flex: 1,
-    justifyContent: 'center',
+    ...createStyle.layout.centerContent(),
+    paddingVertical: Theme.spacing['4xl'] + Theme.spacing.md,
+  },
+  emptyTitleContainer: {
+    flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 60,
+    justifyContent: 'center',
+    gap: 12,
+    marginBottom: Theme.spacing.sm,
   },
   emptyTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#666666',
-    marginBottom: 8,
+    ...createStyle.text.heading(3),
+    color: Theme.colors.text.secondary,
     textAlign: 'center',
   },
   emptyText: {
-    fontSize: 16,
-    color: '#999999',
+    ...createStyle.text.body(),
+    color: Theme.colors.text.disabled,
     textAlign: 'center',
-    paddingHorizontal: 40,
+    paddingHorizontal: Theme.spacing['2xl'] + Theme.spacing.sm,
+  },
+  errorTitleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+    marginBottom: Theme.spacing.sm,
   },
   errorTitle: {
-    fontSize: 24,
-    marginBottom: 8,
+    ...createStyle.text.heading(2),
   },
   errorText: {
-    fontSize: 16,
-    color: '#D32F2F',
+    ...createStyle.text.body(),
+    color: Theme.colors.status.error,
     textAlign: 'center',
-    paddingHorizontal: 40,
+    paddingHorizontal: Theme.spacing['2xl'] + Theme.spacing.sm,
   },
 });
 

@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { RootStackParamList } from '../types/navigation';
 import { CartItem } from '../types/api';
+import { Theme, createStyle } from '../theme';
 
 type CheckoutNavigationProp = StackNavigationProp<RootStackParamList, 'Checkout'>;
 
@@ -57,28 +58,31 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
         </View>
       ) : (
         <>
-          <FlatList
-            data={items}
-            renderItem={renderCartItem}
-            keyExtractor={(item) => item.product.id}
-            style={styles.cartList}
-            contentContainerStyle={styles.cartListContent}
-            showsVerticalScrollIndicator={false}
-          />
+          <View style={styles.productsSection}>
+            <FlatList
+              data={items}
+              renderItem={renderCartItem}
+              keyExtractor={(item) => item.product.id}
+              style={styles.cartList}
+              showsVerticalScrollIndicator={false}
+            />
+          </View>
           
           <View style={styles.totalContainer}>
             <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>Total:</Text>
+              <Text style={styles.totalLabel}>Total Pagar:</Text>
               <Text style={styles.totalAmount}>{formatPrice(totalAmount.toString())}</Text>
             </View>
           </View>
           
-          <TouchableOpacity 
-            style={styles.payButton}
-            onPress={handleContinueToPayment}
-          >
-            <Text style={styles.payButtonText}>Continuar al Pago</Text>
-          </TouchableOpacity>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity 
+              style={styles.payButton}
+              onPress={handleContinueToPayment}
+            >
+              <Text style={styles.payButtonText}>Continuar al Pago</Text>
+            </TouchableOpacity>
+          </View>
         </>
       )}
     </View>
@@ -88,25 +92,28 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: Theme.colors.background.primary,
+  },
+  productsSection: {
+    flex: 1,
+    paddingHorizontal: Theme.spacing.layout.containerPadding,
+    paddingTop: Theme.spacing.lg, // Add more top margin to product list
+    // No bottom margin to extend fully to the bottom
   },
   cartList: {
     flex: 1,
-    paddingHorizontal: 20,
-  },
-  cartListContent: {
-    paddingTop: 24,
   },
   cartItem: {
     flexDirection: 'row',
-    backgroundColor: '#f8f9fa',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-    elevation: 2,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: Theme.spacing.md,
+    paddingHorizontal: Theme.spacing.base,
+    backgroundColor: Theme.colors.background.surface,
+    borderRadius: Theme.borderRadius.base,
+    marginBottom: Theme.spacing.sm,
+    borderWidth: 1,
+    borderColor: Theme.colors.border.light,
   },
   productImage: {
     width: 60,
@@ -116,37 +123,35 @@ const styles = StyleSheet.create({
   },
   productInfo: {
     flex: 1,
-    justifyContent: 'space-between',
   },
   productName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333333',
-    marginBottom: 4,
+    ...Theme.typography.textStyles.body,
+    fontWeight: Theme.typography.fontWeight.semibold,
+    color: Theme.colors.text.primary,
+    marginBottom: Theme.spacing.xs,
   },
   productPrice: {
-    fontSize: 14,
-    color: '#666666',
+    ...Theme.typography.textStyles.bodySmall,
+    color: Theme.colors.text.secondary,
     marginBottom: 2,
   },
   quantity: {
-    fontSize: 12,
-    color: '#999999',
+    ...Theme.typography.textStyles.bodySmall,
+    color: Theme.colors.text.secondary,
   },
   subtotalContainer: {
     justifyContent: 'center',
     alignItems: 'flex-end',
   },
   subtotal: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1976D2',
+    ...Theme.typography.textStyles.price,
+    color: Theme.colors.secondary.main, // Dark blue for prices
   },
   totalContainer: {
-    backgroundColor: '#f0f2f5',
-    padding: 20,
+    backgroundColor: '#FAFAFA', // Lighter background
+    padding: Theme.spacing.layout.containerPadding,
     borderTopWidth: 1,
-    borderTopColor: '#e9ecef',
+    borderTopColor: Theme.colors.border.light,
   },
   totalRow: {
     flexDirection: 'row',
@@ -154,31 +159,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   totalLabel: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#333333',
+    ...createStyle.text.heading(4),
   },
   totalAmount: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#1976D2',
+    ...Theme.typography.textStyles.priceLarge,
+    color: Theme.colors.secondary.main, // Dark blue for prices
+  },
+  buttonContainer: {
+    backgroundColor: '#FAFAFA', // Same lighter background as total container
+    padding: Theme.spacing.layout.containerPadding,
   },
   payButton: {
-    backgroundColor: '#1976D2',
-    marginHorizontal: 20,
-    marginVertical: 16,
-    paddingVertical: 16,
-    borderRadius: 12,
-    elevation: 3,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    ...createStyle.button('primary'), // Revert to original green button
+    paddingVertical: Theme.spacing.base,
+    // No shadow for clean design
   },
   payButtonText: {
-    color: '#ffffff',
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    ...createStyle.text.button('large', 'primary'), // Revert to white text
   },
   emptyCart: {
     flex: 1,

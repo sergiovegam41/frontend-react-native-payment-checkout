@@ -1,45 +1,46 @@
-// Color System - Design Identity
+// Wompi Design System - Color Palette
 export const Colors = {
-  // Primary Brand Colors
+  // Primary Brand Colors - Fresh Green Palette
   primary: {
-    main: '#2E7D32',        // Main green - buttons, accents
-    light: '#66BB6A',       // Light green - success states
-    dark: '#1B5E20',        // Dark green - pressed states
-    surface: '#E8F5E8',     // Very light green - backgrounds
+    main: '#72c571',        // Fresh green (main brand color)
+    light: '#8FD18E',       // Lighter fresh green
+    dark: '#066851',        // Deep forest green
+    surface: '#E7F0ED',     // Very subtle background green
   },
 
-  // Secondary Brand Colors  
+  // Secondary Brand Colors - Blue Palette
   secondary: {
-    main: '#1976D2',        // Blue - links, info
-    light: '#42A5F5',       // Light blue - hover states
-    dark: '#0D47A1',        // Dark blue - pressed states
-    surface: '#E3F2FD',     // Very light blue - backgrounds
+    main: '#5CA1FF',        // Soft blue for prices and important elements
+    light: '#99d1fc',       // Light blue
+    lighter: '#B8E0FD',     // Even lighter blue
+    dark: '#0E62EC',        // Darker blue accent
+    surface: '#F0F8FF',     // Very light blue background
   },
 
-  // Payment & Transaction Colors
-  payment: {
-    main: '#F57C00',        // Orange - payment buttons
-    light: '#FFB74D',       // Light orange - hover states
-    dark: '#E65100',        // Dark orange - pressed states
-    surface: '#FFF3E0',     // Very light orange - backgrounds
+  // Accent Colors - Bright Yellow-Green
+  accent: {
+    main: '#DDFD60',        // Bright yellow-green accent
+    light: '#E8FE88',       // Lighter yellow-green
+    dark: '#B8D240',        // Darker yellow-green
+    surface: '#F8FFE6',     // Very light yellow background
   },
 
-  // Status Colors
+  // Status Colors - Updated with Wompi Palette
   status: {
-    success: '#2E7D32',     // Green - approved, success
-    warning: '#F57C00',     // Orange - pending, caution
-    error: '#D32F2F',       // Red - declined, errors
-    info: '#1976D2',        // Blue - information
-    pending: '#FF9800',     // Amber - processing states
+    success: '#72c571',     // Fresh green - approved, success
+    warning: '#DDFD60',     // Bright yellow - pending, caution
+    error: '#F26464',       // Soft red - low stock, errors
+    info: '#99d1fc',        // Clean blue - information
+    pending: '#DDFD60',     // Bright yellow - processing states
   },
 
-  // Neutral Colors
+  // Neutral Colors - Clean Grays
   neutral: {
     white: '#FFFFFF',
-    black: '#000000',
+    black: '#2C2A29',       // Softer black from Wompi palette
     gray: {
       50: '#FAFAFA',
-      100: '#F5F5F5',
+      100: '#E7F0ED',       // Very light background from Wompi
       200: '#EEEEEE',
       300: '#E0E0E0',
       400: '#BDBDBD',
@@ -47,35 +48,35 @@ export const Colors = {
       600: '#757575',
       700: '#616161',
       800: '#424242',
-      900: '#212121',
+      900: '#2C2A29',       // Wompi soft black
     }
   },
 
-  // Text Colors
+  // Text Colors - Updated with Wompi Palette
   text: {
-    primary: '#333333',     // Main text color
+    primary: '#2C2A29',     // Soft black for main text
     secondary: '#666666',   // Secondary text
     disabled: '#999999',    // Disabled text
     hint: '#BDBDBD',       // Placeholder text
     inverse: '#FFFFFF',     // Text on dark backgrounds
   },
 
-  // Background Colors
+  // Background Colors - Fresh Mint Theme
   background: {
-    primary: '#FFFFFF',     // Main background
-    secondary: '#F8F9FA',   // Secondary background
-    tertiary: '#F0F2F5',    // Cards, sections
-    surface: '#FFFFFF',     // Surface elements
-    overlay: 'rgba(0, 0, 0, 0.5)', // Modal overlays
+    primary: '#E7F0ED',     // Mint background for all screens
+    secondary: '#E7F0ED',   // Same mint background
+    tertiary: '#F8F9FA',    // Light gray sections
+    surface: '#FFFFFF',     // Surface elements (cards, etc.)
+    overlay: 'rgba(44, 42, 41, 0.5)', // Modal overlays with soft black
   },
 
-  // Border Colors
+  // Border Colors - Clean and Subtle
   border: {
-    light: '#E9ECEF',       // Light borders
+    light: '#E7F0ED',       // Very light green borders
     main: '#E0E0E0',        // Main borders  
     dark: '#BDBDBD',        // Dark borders
-    focus: '#1976D2',       // Focus states
-    error: '#D32F2F',       // Error borders
+    focus: '#72c571',       // Fresh green focus states
+    error: '#E74C3C',       // Clean red error borders
   },
 
   // Shadow Colors

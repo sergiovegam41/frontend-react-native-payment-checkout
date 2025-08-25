@@ -6,6 +6,7 @@ import {
   StyleSheet,
   KeyboardTypeOptions,
 } from 'react-native';
+import { Theme } from '../theme';
 
 interface Props {
   value: string;
@@ -79,7 +80,7 @@ const styles = StyleSheet.create({
     borderColor: '#2E7D32',
   },
   error: {
-    borderColor: '#D32F2F',
+    borderColor: '#F26464', // Consistent soft red
   },
   input: {
     fontSize: 16,
@@ -87,7 +88,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 12,
-    color: '#D32F2F',
+    color: '#F26464', // Consistent soft red
     marginTop: 4,
   },
 });

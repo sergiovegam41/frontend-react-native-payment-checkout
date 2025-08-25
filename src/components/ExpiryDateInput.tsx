@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
     borderColor: '#2E7D32',
   },
   error: {
-    borderColor: '#D32F2F',
+    borderColor: '#F26464', // Consistent soft red
   },
   row: {
     flexDirection: 'row',
@@ -143,11 +143,11 @@ const styles = StyleSheet.create({
     color: '#2E7D32',
   },
   invalid: {
-    color: '#D32F2F',
+    color: '#F26464', // Consistent soft red
   },
   errorText: {
     fontSize: 12,
-    color: '#D32F2F',
+    color: '#F26464', // Consistent soft red
     marginTop: 4,
   },
 });

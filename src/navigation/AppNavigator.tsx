@@ -1,10 +1,12 @@
 import React from 'react';
-import { TouchableOpacity, Text, Alert } from 'react-native';
+import { TouchableOpacity, Text, Alert, View } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useAppDispatch } from '../store/hooks';
 import { clearCart } from '../store/slices/cartSlice';
 import { RootStackParamList } from '../types/navigation';
 import CartBadge from '../components/CartBadge';
+import { Theme } from '../theme';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 // Import screens (will create them next)
 import SplashScreen from '../screens/SplashScreen';
@@ -46,9 +48,7 @@ const ClearCartButton: React.FC = () => {
         backgroundColor: 'rgba(255, 255, 255, 0.1)'
       }}
     >
-      <Text style={{ color: '#ffffff', fontSize: 18 }}>
-        🗑️
-      </Text>
+      <Icon name="trash-outline" size={20} color="#ffffff" />
     </TouchableOpacity>
   );
 };
@@ -59,11 +59,12 @@ const AppNavigator: React.FC = () => {
       initialRouteName="Splash"
       screenOptions={{
         headerStyle: {
-          backgroundColor: '#2E7D32',
+          backgroundColor: '#72c571', // Fresh green for app bar
         },
         headerTintColor: '#ffffff',
         headerTitleStyle: {
           fontWeight: 'bold',
+          fontFamily: Theme.typography.fontFamily.primary,
         },
       }}
     >

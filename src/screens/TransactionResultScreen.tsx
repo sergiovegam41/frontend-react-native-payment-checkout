@@ -5,6 +5,7 @@ import { RouteProp } from '@react-navigation/native';
 import { useAppDispatch } from '../store/hooks';
 import { clearCart } from '../store/slices/cartSlice';
 import { RootStackParamList } from '../types/navigation';
+import { Theme, createStyle } from '../theme';
 
 type TransactionResultNavigationProp = StackNavigationProp<RootStackParamList, 'TransactionResult'>;
 type TransactionResultRouteProp = RouteProp<RootStackParamList, 'TransactionResult'>;
@@ -55,7 +56,7 @@ const styles = StyleSheet.create({
     padding: 20,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#ffffff',
+    backgroundColor: Theme.colors.background.primary, // Mint background
   },
   title: {
     fontSize: 28,
@@ -82,7 +83,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   homeButton: {
-    backgroundColor: '#2E7D32',
+    backgroundColor: Theme.colors.primary.main,
     paddingVertical: 16,
     borderRadius: 12,
     elevation: 3,

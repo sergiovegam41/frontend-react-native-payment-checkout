@@ -39,11 +39,11 @@ export const Spacing = {
     section: 24,    // Between major sections
   },
 
-  // Component-specific spacing
+  // Component-specific spacing - Wompi Rounded Style
   card: {
     padding: 16,    // Internal card padding
     margin: 12,     // Between cards
-    borderRadius: 12, // Card corner radius
+    borderRadius: 20, // More rounded corners for cards
   },
 
   button: {
@@ -51,21 +51,21 @@ export const Spacing = {
     paddingVertical: 12,
     paddingSmall: 8,
     paddingLarge: 16,
-    borderRadius: 8,
-    borderRadiusSmall: 6,
-    borderRadiusLarge: 12,
+    borderRadius: 16,  // More rounded buttons
+    borderRadiusSmall: 12,
+    borderRadiusLarge: 20,
   },
 
   input: {
     paddingHorizontal: 16,
     paddingVertical: 12,
-    borderRadius: 8,
+    borderRadius: 16,  // Rounded input fields
     marginBottom: 16,
   },
 
   modal: {
     padding: 24,
-    borderRadius: 16,
+    borderRadius: 24,  // Very rounded modals
     margin: 20,
   },
 
@@ -85,16 +85,16 @@ export const Spacing = {
   },
 } as const;
 
-// Border radius system
+// Border radius system - Wompi Rounded Design
 export const BorderRadius = {
   none: 0,
-  xs: 4,
-  sm: 6,
-  base: 8,
-  md: 12,
-  lg: 16,
-  xl: 20,
-  '2xl': 24,
+  xs: 8,     // Minimum rounded corners
+  sm: 12,    // Small rounded corners
+  base: 16,  // Base rounded corners
+  md: 20,    // Medium rounded corners  
+  lg: 24,    // Large rounded corners
+  xl: 32,    // Extra large rounded corners
+  '2xl': 40, // Very large rounded corners
   full: 999, // For circular elements
 } as const;
 

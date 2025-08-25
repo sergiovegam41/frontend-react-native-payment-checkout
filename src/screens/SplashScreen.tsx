@@ -9,6 +9,8 @@ import {
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../types/navigation';
+import { Theme } from '../theme';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 type SplashScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Splash'>;
 
@@ -103,7 +105,7 @@ const SplashScreen: React.FC<Props> = ({ navigation }) => {
           ]}
         >
           <View style={styles.logo}>
-            <Text style={styles.logoEmoji}>💳</Text>
+            <Icon name="card-outline" size={48} color="#ffffff" />
             <View style={styles.logoBackground} />
           </View>
         </Animated.View>
@@ -139,7 +141,7 @@ const SplashScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1a1a2e',
+    backgroundColor: Theme.colors.neutral.black,
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingTop: 80,
@@ -158,7 +160,7 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: '#2E7D32',
+    backgroundColor: Theme.colors.primary.main,
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 8,
@@ -175,10 +177,6 @@ const styles = StyleSheet.create({
     top: -10,
     left: -10,
   },
-  logoEmoji: {
-    fontSize: 48,
-    zIndex: 1,
-  },
   contentContainer: {
     alignItems: 'center',
     marginVertical: 10,
@@ -186,7 +184,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: Theme.colors.text.inverse,
     textAlign: 'center',
     letterSpacing: 2,
   },
@@ -196,7 +194,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 18,
-    color: '#b8b8d1',
+    color: Theme.colors.text.secondary,
     textAlign: 'center',
   },
   loadingContainer: {
@@ -214,17 +212,17 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 3,
     borderColor: 'transparent',
-    borderTopColor: '#4CAF50',
-    borderRightColor: '#4CAF50',
+    borderTopColor: Theme.colors.primary.main,
+    borderRightColor: Theme.colors.primary.main,
   },
   loadingText: {
     fontSize: 14,
-    color: '#b8b8d1',
+    color: Theme.colors.text.secondary,
     fontWeight: '500',
   },
   poweredBy: {
     fontSize: 12,
-    color: '#6b6b7d',
+    color: Theme.colors.text.disabled,
     textAlign: 'center',
     fontStyle: 'italic',
   },

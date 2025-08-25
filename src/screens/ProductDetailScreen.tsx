@@ -13,6 +13,8 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../types/navigation';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { Theme, createStyle } from '../theme';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { addToCart } from '../store/slices/cartSlice';
 import { Product } from '../types/api';
 
@@ -94,7 +96,7 @@ const ProductDetailScreen: React.FC<Props> = ({ navigation, route }) => {
       setModalConfig({
         title: 'Stock insuficiente',
         message: 'No hay suficientes unidades disponibles',
-        icon: '⚠️',
+        icon: 'alert-circle-outline',
         buttons: [{ text: 'OK' }]
       });
       setModalVisible(true);
@@ -109,7 +111,7 @@ const ProductDetailScreen: React.FC<Props> = ({ navigation, route }) => {
       setModalConfig({
         title: 'Stock insuficiente',
         message: `Ya tienes ${totalQuantityInCart} unidades en el carrito. Solo puedes agregar ${product.stock - totalQuantityInCart} más.`,
-        icon: '⚠️',
+        icon: 'alert-circle-outline',
         buttons: [{ text: 'OK' }]
       });
       setModalVisible(true);
@@ -131,7 +133,7 @@ const ProductDetailScreen: React.FC<Props> = ({ navigation, route }) => {
     setModalConfig({
       title: '¡Agregado al carrito!',
       message: `${quantity} ${quantity === 1 ? 'unidad' : 'unidades'} de ${product!.name} agregadas al carrito`,
-      icon: '✅',
+      icon: 'checkmark-circle-outline',
       buttons: [
         { text: 'Seguir comprando', style: 'cancel' },
         { text: 'Ir al carrito', onPress: () => navigation.navigate('ProductSelection') }
@@ -163,7 +165,10 @@ const ProductDetailScreen: React.FC<Props> = ({ navigation, route }) => {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.errorContainer}>
-          <Text style={styles.errorTitle}>😞 Producto no encontrado</Text>
+          <View style={styles.errorTitleContainer}>
+            <Icon name="sad-outline" size={24} color={Theme.colors.text.secondary} />
+            <Text style={styles.errorTitle}>Producto no encontrado</Text>
+          </View>
           <Text style={styles.errorText}>El producto que buscas no está disponible</Text>
           <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
             <Text style={styles.backButtonText}>Volver</Text>
@@ -259,7 +264,7 @@ const ProductDetailScreen: React.FC<Props> = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Theme.colors.background.primary, // Mint background
   },
   content: {
     padding: 20,
@@ -316,21 +321,22 @@ const styles = StyleSheet.create({
   quantityButton: {
     width: 40,
     height: 40,
-    borderRadius: 20,
-    backgroundColor: '#2E7D32',
+    borderRadius: 999, // Maximally rounded
+    backgroundColor: '#72c571', // Fresh green
     justifyContent: 'center',
     alignItems: 'center',
   },
   quantityButtonDisabled: {
-    backgroundColor: '#E0E0E0',
+    backgroundColor: Theme.colors.neutral.gray[300],
   },
   quantityButtonText: {
     fontSize: 20,
     fontWeight: 'bold',
     color: '#FFFFFF',
+    fontFamily: Theme.typography.fontFamily.primary,
   },
   quantityButtonTextDisabled: {
-    color: '#999999',
+    color: Theme.colors.text.disabled,
   },
   quantityText: {
     fontSize: 18,
@@ -350,29 +356,23 @@ const styles = StyleSheet.create({
   },
   addToCartButton: {
     flex: 1,
-    backgroundColor: '#2E7D32',
-    borderRadius: 12,
+    ...createStyle.button('primary'),
     paddingVertical: 14,
     justifyContent: 'center',
     alignItems: 'center',
   },
   addToCartButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: 'bold',
+    ...createStyle.text.button('normal', 'primary'),
   },
   buyNowButton: {
-    backgroundColor: '#1976D2',
-    borderRadius: 12,
+    ...createStyle.button('outline'),
     paddingVertical: 14,
     paddingHorizontal: 24,
     justifyContent: 'center',
     alignItems: 'center',
   },
   buyNowButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: 'bold',
+    ...createStyle.text.button('normal', 'outline'),
   },
   errorContainer: {
     flex: 1,
@@ -380,11 +380,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 40,
   },
+  errorTitleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    marginBottom: 8,
+  },
   errorTitle: {
     fontSize: 20,
     fontWeight: 'bold',
     color: '#666666',
-    marginBottom: 8,
     textAlign: 'center',
   },
   errorText: {
@@ -394,15 +400,12 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   backButton: {
-    backgroundColor: '#2E7D32',
+    ...createStyle.button('primary'),
     paddingHorizontal: 24,
     paddingVertical: 12,
-    borderRadius: 8,
   },
   backButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: 'bold',
+    ...createStyle.text.button('normal', 'primary'),
   },
 });
 

@@ -32,17 +32,21 @@ export type {
 
 // Helper function to create consistent styles
 export const createStyle = {
-  // Common button style creator
-  button: (variant: 'primary' | 'secondary' | 'payment' = 'primary') => ({
+  // Common button style creator - Wompi Style (No Shadows)
+  button: (variant: 'primary' | 'secondary' | 'outline' | 'accent' = 'primary') => ({
     paddingHorizontal: Theme.spacing.button.paddingHorizontal,
     paddingVertical: Theme.spacing.button.paddingVertical,
-    borderRadius: Theme.spacing.button.borderRadius,
+    borderRadius: 999, // Maximally rounded buttons
     backgroundColor: variant === 'primary' 
-      ? Theme.colors.primary.main 
+      ? '#72c571'  // Fresh green for primary buttons
       : variant === 'secondary' 
         ? Theme.colors.secondary.main 
-        : Theme.colors.payment.main,
-    ...Theme.shadows.base,
+        : variant === 'accent'
+          ? Theme.colors.accent.main
+          : 'transparent', // Transparent for outline buttons
+    borderWidth: variant === 'outline' ? 2 : 0,
+    borderColor: variant === 'outline' ? '#2C2A29' : 'transparent',
+    // No shadows for clean Wompi design
   }),
   
   // Common card style creator
@@ -68,18 +72,21 @@ export const createStyle = {
     ...Theme.typography.textStyles.inputText,
   }),
   
-  // Common text styles
+  // Common text styles with Wompi font
   text: {
     heading: (level: 1 | 2 | 3 | 4 = 1) => ({
       color: Theme.colors.text.primary,
+      fontFamily: Theme.typography.fontFamily.primary,
       ...Theme.typography.textStyles[`h${level}` as keyof typeof Theme.typography.textStyles],
     }),
     body: (size: 'small' | 'normal' | 'large' = 'normal') => ({
       color: Theme.colors.text.primary,
+      fontFamily: Theme.typography.fontFamily.primary,
       ...Theme.typography.textStyles[size === 'small' ? 'bodySmall' : size === 'large' ? 'bodyLarge' : 'body'],
     }),
-    button: (size: 'small' | 'normal' | 'large' = 'normal') => ({
-      color: Theme.colors.text.inverse,
+    button: (size: 'small' | 'normal' | 'large' = 'normal', variant: 'primary' | 'outline' = 'primary') => ({
+      color: variant === 'outline' ? '#2C2A29' : Theme.colors.text.inverse,
+      fontFamily: Theme.typography.fontFamily.primary,
       textAlign: 'center' as const,
       ...Theme.typography.textStyles[size === 'small' ? 'buttonSmall' : size === 'large' ? 'buttonLarge' : 'button'],
     }),

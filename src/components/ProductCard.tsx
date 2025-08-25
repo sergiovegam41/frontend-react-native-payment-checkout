@@ -37,9 +37,9 @@ const ProductCard: React.FC<Props> = ({ product, onPress }) => {
     if (stock === 0) {
       return { text: 'Agotado', color: Theme.colors.status.error };
     } else if (stock < 10) {
-      return { text: `Solo ${stock} disponibles`, color: Theme.colors.status.warning };
+      return { text: `Solo ${stock} disponibles`, color: '#F26464' }; // Soft red for low stock
     } else if (stock < 20) {
-      return { text: 'Pocas unidades', color: Theme.colors.status.warning };
+      return { text: 'Pocas unidades', color: '#F26464' }; // Soft red for few units
     }
     return { text: 'En stock', color: Theme.colors.status.success };
   };

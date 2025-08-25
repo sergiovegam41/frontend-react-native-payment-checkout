@@ -8,6 +8,8 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { detectCardType, formatCardNumber, validateCardNumber } from '../utils/cardValidation';
+import { Theme } from '../theme';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 interface Props {
   value: string;
@@ -35,14 +37,13 @@ const CreditCardInput: React.FC<Props> = ({
   };
 
   const getCardTypeIcon = () => {
-    switch (cardType) {
-      case 'VISA':
-        return '💳'; // In real app, use actual VISA logo
-      case 'MASTERCARD':
-        return '💳'; // In real app, use actual MasterCard logo
-      default:
-        return '💳';
-    }
+    return (
+      <Icon 
+        name="card-outline" 
+        size={24} 
+        color={Theme.colors.primary.main}
+      />
+    );
   };
 
   return (
@@ -65,14 +66,18 @@ const CreditCardInput: React.FC<Props> = ({
           onBlur={() => setIsFocused(false)}
         />
         <View style={styles.cardTypeContainer}>
-          <Text style={styles.cardTypeIcon}>{getCardTypeIcon()}</Text>
+          <View style={styles.cardTypeIconContainer}>{getCardTypeIcon()}</View>
           {cardType !== 'UNKNOWN' && (
             <Text style={styles.cardTypeText}>{cardType}</Text>
           )}
           {value.length > 12 && (
-            <Text style={[styles.validationIcon, isValid ? styles.valid : styles.invalid]}>
-              {isValid ? '✓' : '✗'}
-            </Text>
+            <View style={styles.validationIconContainer}>
+              <Icon 
+                name={isValid ? "checkmark-circle" : "close-circle"} 
+                size={16} 
+                color={isValid ? Theme.colors.status.success : Theme.colors.status.error}
+              />
+            </View>
           )}
         </View>
       </View>
@@ -108,7 +113,7 @@ const styles = StyleSheet.create({
     borderColor: '#2E7D32',
   },
   error: {
-    borderColor: '#D32F2F',
+    borderColor: '#F26464', // Consistent soft red
   },
   input: {
     flex: 1,
@@ -120,8 +125,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  cardTypeIcon: {
-    fontSize: 24,
+  cardTypeIconContainer: {
     marginRight: 4,
   },
   cardTypeText: {
@@ -130,19 +134,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginRight: 8,
   },
-  validationIcon: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  valid: {
-    color: '#2E7D32',
-  },
-  invalid: {
-    color: '#D32F2F',
+  validationIconContainer: {
+    marginLeft: 4,
   },
   errorText: {
     fontSize: 12,
-    color: '#D32F2F',
+    color: '#F26464', // Consistent soft red
     marginTop: 4,
   },
   cardTypeLabel: {

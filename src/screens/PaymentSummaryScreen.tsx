@@ -58,7 +58,7 @@ const PaymentSummaryScreen: React.FC<Props> = ({ navigation }) => {
       setModalConfig({
         title: 'Error',
         message: 'Faltan datos para procesar el pago',
-        icon: '⚠️',
+        icon: 'alert-circle-outline',
         buttons: [{ text: 'OK' }]
       });
       setShowModal(true);
@@ -108,7 +108,7 @@ const PaymentSummaryScreen: React.FC<Props> = ({ navigation }) => {
           setModalConfig({
             title: 'Error de Pago',
             message: result.payload.error?.message || 'No se pudo procesar tu pago',
-            icon: '❌',
+            icon: 'close-circle-outline',
             buttons: [{ text: 'OK' }]
           });
           setShowModal(true);
@@ -120,7 +120,7 @@ const PaymentSummaryScreen: React.FC<Props> = ({ navigation }) => {
         setModalConfig({
           title: 'Error de Pago',
           message: errorMessage,
-          icon: '❌',
+          icon: 'close-circle-outline',
           buttons: [{ text: 'OK' }]
         });
         setShowModal(true);
@@ -130,7 +130,7 @@ const PaymentSummaryScreen: React.FC<Props> = ({ navigation }) => {
       setModalConfig({
         title: 'Error de Conexión',
         message: 'No se pudo conectar con el servidor. Verifica tu conexión a internet.',
-        icon: '📡',
+        icon: 'wifi-outline',
         buttons: [{ text: 'OK' }]
       });
       setShowModal(true);
@@ -164,7 +164,7 @@ const PaymentSummaryScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.cardSection}>
-        <Text style={styles.sectionTitle}>Método de Pago</Text>
+        <Text style={styles.paymentSectionTitle}>Método de Pago</Text>
         <View style={styles.cardInfo}>
           <Text style={styles.cardText}>**** **** **** {cardData?.number?.slice(-4) || '0000'}</Text>
           <Text style={styles.cardText}>{cardData?.holderName || 'Nombre del titular'}</Text>
@@ -172,7 +172,8 @@ const PaymentSummaryScreen: React.FC<Props> = ({ navigation }) => {
       </View>
 
       <View style={styles.productsSection}>
-        <Text style={styles.sectionTitle}>Productos</Text>
+        <Text style={styles.productsSectionTitle}>Productos</Text>
+        <View style={styles.productListSeparator} />
         <FlatList
           data={items}
           renderItem={renderCartItem}
@@ -184,20 +185,22 @@ const PaymentSummaryScreen: React.FC<Props> = ({ navigation }) => {
       
       <View style={styles.totalContainer}>
         <View style={styles.totalRow}>
-          <Text style={styles.totalLabel}>Total a Pagar:</Text>
+          <Text style={styles.totalLabel}>Total Pagar:</Text>
           <Text style={styles.totalAmount}>{formatPrice(totalAmount.toString())}</Text>
         </View>
       </View>
       
-      <TouchableOpacity 
-        style={[styles.payButton, isProcessing && styles.payButtonDisabled]}
-        onPress={handlePayment}
-        disabled={isProcessing}
-      >
-        <Text style={styles.payButtonText}>
-          {isProcessing ? 'Procesando...' : 'Procesar Pago'}
-        </Text>
-      </TouchableOpacity>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity 
+          style={[styles.payButton, isProcessing && styles.payButtonDisabled]}
+          onPress={handlePayment}
+          disabled={isProcessing}
+        >
+          <Text style={styles.payButtonText}>
+            {isProcessing ? 'Procesando...' : 'Procesar Pago'}
+          </Text>
+        </TouchableOpacity>
+      </View>
 
       {/* Processing Modal */}
       <Modal
@@ -233,16 +236,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 0,
   },
   cardSection: {
-    margin: Theme.spacing.layout.containerPadding,
-    marginTop: Theme.spacing.lg + Theme.spacing.md,
-    padding: Theme.spacing.base,
+    paddingHorizontal: Theme.spacing.layout.containerPadding, // Same as product list
+    paddingVertical: Theme.spacing.base,
+    // Remove top margin for tighter layout
     backgroundColor: Theme.colors.background.secondary,
     borderRadius: Theme.spacing.card.borderRadius,
-    ...Theme.shadows.sm,
+    // No shadow for clean Wompi design
   },
-  sectionTitle: {
+  paymentSectionTitle: {
     ...createStyle.text.heading(4),
-    marginBottom: Theme.spacing.xl,
+    marginBottom: Theme.spacing.xl, // Normal spacing for payment section
+  },
+  productsSectionTitle: {
+    ...createStyle.text.heading(4),
+    marginBottom: Theme.spacing.sm, // Closer to product list
   },
   cardInfo: {
     backgroundColor: Theme.colors.background.surface,
@@ -258,8 +265,14 @@ const styles = StyleSheet.create({
   },
   productsSection: {
     flex: 1,
-    margin: Theme.spacing.layout.containerPadding,
-    marginTop: Theme.spacing.sm,
+    paddingHorizontal: Theme.spacing.layout.containerPadding,
+    paddingTop: Theme.spacing.sm,
+    // No bottom margin to extend fully to the bottom
+  },
+  productListSeparator: {
+    height: 1,
+    backgroundColor: Theme.colors.border.light,
+    marginBottom: Theme.spacing.sm,
   },
   cartList: {
     flex: 1,
@@ -294,7 +307,7 @@ const styles = StyleSheet.create({
     color: Theme.colors.secondary.main,
   },
   totalContainer: {
-    backgroundColor: Theme.colors.background.tertiary,
+    backgroundColor: '#FAFAFA', // Lighter background
     padding: Theme.spacing.layout.containerPadding,
     borderTopWidth: 1,
     borderTopColor: Theme.colors.border.light,
@@ -311,19 +324,20 @@ const styles = StyleSheet.create({
     ...Theme.typography.textStyles.priceLarge,
     color: Theme.colors.secondary.main,
   },
+  buttonContainer: {
+    backgroundColor: '#FAFAFA', // Same lighter background as total container
+    padding: Theme.spacing.layout.containerPadding,
+  },
   payButton: {
-    ...createStyle.button('payment'),
-    marginHorizontal: Theme.spacing.layout.containerPadding,
-    marginVertical: Theme.spacing.base,
+    ...createStyle.button('primary'), // Revert to original green button
     paddingVertical: Theme.spacing.button.paddingLarge,
-    borderRadius: Theme.spacing.card.borderRadius,
-    ...Theme.shadows.md,
+    // No shadow for clean Wompi design
   },
   payButtonDisabled: {
     backgroundColor: Theme.colors.neutral.gray[400],
   },
   payButtonText: {
-    ...createStyle.text.button('large'),
+    ...createStyle.text.button('large', 'primary'), // Revert to white text
   },
   modalOverlay: {
     flex: 1,
@@ -335,7 +349,7 @@ const styles = StyleSheet.create({
     padding: Theme.spacing.modal.padding + Theme.spacing.sm,
     borderRadius: Theme.spacing.modal.borderRadius,
     alignItems: 'center',
-    ...Theme.shadows.xl,
+    // No shadow for clean Wompi design
   },
   modalText: {
     ...createStyle.text.heading(4),

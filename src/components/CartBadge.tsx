@@ -2,6 +2,8 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAppSelector } from '../store/hooks';
+import { Theme } from '../theme';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const CartBadge: React.FC = () => {
   const navigation = useNavigation();
@@ -17,7 +19,9 @@ const CartBadge: React.FC = () => {
 
   return (
     <TouchableOpacity style={styles.container} onPress={handlePress}>
-      <Text style={styles.cartIcon}>🛒</Text>
+      <View style={styles.cartIconContainer}>
+        <Icon name="cart-outline" size={24} color="#ffffff" />
+      </View>
       <View style={styles.badge}>
         <Text style={styles.badgeText}>{totalItems > 99 ? '99+' : totalItems}</Text>
       </View>
@@ -31,8 +35,9 @@ const styles = StyleSheet.create({
     marginRight: 16,
     padding: 8,
   },
-  cartIcon: {
-    fontSize: 24,
+  cartIconContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   badge: {
     position: 'absolute',

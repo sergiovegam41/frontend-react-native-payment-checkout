@@ -1,8 +1,9 @@
-// Typography System
+// Wompi Typography System - Clean and Modern
 export const Typography = {
-  // Font Families
+  // Font Families - Open Sans Soft
   fontFamily: {
-    primary: 'System', // React Native default system font
+    primary: 'OpenSans-SemiCondensed-Regular', // Open Sans Semi Condensed
+    fallback: 'System', // React Native fallback system font
     monospace: 'monospace', // For SKU, card numbers, etc.
   },
 

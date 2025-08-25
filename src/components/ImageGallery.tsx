@@ -11,6 +11,8 @@ import {
   Easing,
 } from 'react-native';
 import { ProductImage } from '../types/api';
+import { Theme } from '../theme';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 interface Props {
   images: ProductImage[];
@@ -63,7 +65,9 @@ const ImageGallery: React.FC<Props> = ({ images, height = width * 0.8 }) => {
     return (
       <View style={[styles.container, { height }]}>
         <View style={styles.placeholderContainer}>
-          <Text style={styles.placeholderText}>📷</Text>
+          <View style={styles.placeholderIconContainer}>
+            <Icon name="image-outline" size={48} color={Theme.colors.neutral.gray[500]} />
+          </View>
           <Text style={styles.placeholderSubtext}>Sin imágenes</Text>
         </View>
       </View>
@@ -186,9 +190,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#F5F5F5',
   },
-  placeholderText: {
-    fontSize: 48,
+  placeholderIconContainer: {
     marginBottom: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   placeholderSubtext: {
     fontSize: 16,
