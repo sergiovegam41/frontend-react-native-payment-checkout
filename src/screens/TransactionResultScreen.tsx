@@ -2,6 +2,8 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
+import { useAppDispatch } from '../store/hooks';
+import { clearCart } from '../store/slices/cartSlice';
 import { RootStackParamList } from '../types/navigation';
 
 type TransactionResultNavigationProp = StackNavigationProp<RootStackParamList, 'TransactionResult'>;
@@ -14,8 +16,10 @@ interface Props {
 
 const TransactionResultScreen: React.FC<Props> = ({ navigation, route }) => {
   const { transactionId } = route.params;
+  const dispatch = useAppDispatch();
 
   const goToHome = () => {
+    dispatch(clearCart()); // Ensure cart is completely cleared
     navigation.reset({
       index: 0,
       routes: [{ name: 'ProductsHome' }],
@@ -24,21 +28,23 @@ const TransactionResultScreen: React.FC<Props> = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Resultado de Transacción</Text>
+      <Text style={styles.title}>🎉 ¡Pago Exitoso!</Text>
       <Text style={styles.transactionId}>
-        ID: {transactionId}
+        ID de Transacción: {transactionId}
       </Text>
       <Text style={styles.description}>
-        Mostrar resultado de la transacción
-        {'\n'}Estado: APROBADA/RECHAZADA/ERROR
+        Tu compra ha sido procesada exitosamente.
+        {'\n'}Recibirás un email de confirmación en breve.
       </Text>
       
-      <TouchableOpacity 
-        style={styles.homeButton}
-        onPress={goToHome}
-      >
-        <Text style={styles.homeButtonText}>Volver al Inicio</Text>
-      </TouchableOpacity>
+      <View style={styles.buttonsContainer}>
+        <TouchableOpacity 
+          style={styles.homeButton}
+          onPress={goToHome}
+        >
+          <Text style={styles.homeButtonText}>Seguir Comprando</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -52,10 +58,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
     marginBottom: 16,
-    color: '#333333',
+    color: '#2E7D32',
+    textAlign: 'center',
   },
   transactionId: {
     fontSize: 14,
@@ -70,16 +77,24 @@ const styles = StyleSheet.create({
     color: '#666666',
     lineHeight: 24,
   },
+  buttonsContainer: {
+    width: '100%',
+    paddingHorizontal: 20,
+  },
   homeButton: {
     backgroundColor: '#2E7D32',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 8,
+    paddingVertical: 16,
+    borderRadius: 12,
+    elevation: 3,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   homeButtonText: {
     color: '#ffffff',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
 

@@ -175,13 +175,6 @@ const ProductsHomeScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Productos</Text>
-        <Text style={styles.subtitle}>
-          {products.length > 0 ? `${products.length} productos` : 'Catálogo de productos'}
-        </Text>
-      </View>
-
       <FlatList
         data={products}
         renderItem={renderProduct}
@@ -209,24 +202,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F8F9FA',
-  },
-  header: {
-    backgroundColor: '#FFFFFF',
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333333',
-    marginBottom: 4,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: '#666666',
   },
   listContent: {
     paddingHorizontal: CARD_MARGIN,

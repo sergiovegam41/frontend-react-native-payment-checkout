@@ -234,7 +234,7 @@ const ProductDetailScreen: React.FC<Props> = ({ navigation, route }) => {
         <View style={styles.bottomActions}>
           <TouchableOpacity style={styles.addToCartButton} onPress={handleAddToCart}>
             <Text style={styles.addToCartButtonText}>
-              Agregar al carrito • {formatPrice((parseFloat(product.price) * quantity).toString())}
+              Agregar al carrito
             </Text>
           </TouchableOpacity>
           

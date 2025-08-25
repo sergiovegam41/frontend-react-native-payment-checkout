@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
+  TextInput,
   StyleSheet,
 } from 'react-native';
-import FormInput from './FormInput';
 import { validateExpiryDate } from '../utils/cardValidation';
 
 interface Props {
@@ -22,6 +22,8 @@ const ExpiryDateInput: React.FC<Props> = ({
   onYearChange,
   error,
 }) => {
+  const [monthFocused, setMonthFocused] = useState(false);
+  const [yearFocused, setYearFocused] = useState(false);
   const handleMonthChange = (text: string) => {
     // Only allow numbers and limit to 2 digits
     const numericText = text.replace(/[^0-9]/g, '');
@@ -50,28 +52,34 @@ const ExpiryDateInput: React.FC<Props> = ({
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Fecha de Expiración</Text>
-      <View style={styles.row}>
-        <View style={styles.monthContainer}>
-          <FormInput
+      <View style={[
+        styles.inputContainer,
+        (monthFocused || yearFocused) && styles.focused,
+        error && styles.error,
+      ]}>
+        <View style={styles.row}>
+          <TextInput
+            style={styles.input}
             value={month}
             onChangeText={handleMonthChange}
             placeholder="MM"
-            label=""
+            placeholderTextColor="#999999"
             keyboardType="numeric"
             maxLength={2}
-            error={error && !isValid ? 'Mes inválido' : undefined}
+            onFocus={() => setMonthFocused(true)}
+            onBlur={() => setMonthFocused(false)}
           />
-        </View>
-        <Text style={styles.separator}>/</Text>
-        <View style={styles.yearContainer}>
-          <FormInput
+          <Text style={styles.separator}>/</Text>
+          <TextInput
+            style={styles.input}
             value={year}
             onChangeText={handleYearChange}
             placeholder="YY"
-            label=""
+            placeholderTextColor="#999999"
             keyboardType="numeric"
             maxLength={2}
-            error={error && !isValid ? 'Año inválido' : undefined}
+            onFocus={() => setYearFocused(true)}
+            onBlur={() => setYearFocused(false)}
           />
         </View>
       </View>
@@ -95,22 +103,36 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     color: '#333333',
   },
+  inputContainer: {
+    borderWidth: 2,
+    borderColor: '#E0E0E0',
+    borderRadius: 8,
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 12,
+    height: 56,
+    justifyContent: 'center',
+  },
+  focused: {
+    borderColor: '#2E7D32',
+  },
+  error: {
+    borderColor: '#D32F2F',
+  },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  monthContainer: {
+  input: {
     flex: 1,
-  },
-  yearContainer: {
-    flex: 1,
+    fontSize: 16,
+    color: '#333333',
+    textAlign: 'center',
   },
   separator: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#666666',
-    marginHorizontal: 12,
-    marginTop: -8,
+    marginHorizontal: 8,
   },
   validationText: {
     fontSize: 12,

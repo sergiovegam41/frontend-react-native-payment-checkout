@@ -1,5 +1,8 @@
 import React from 'react';
+import { TouchableOpacity, Text, Alert } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { useAppDispatch } from '../store/hooks';
+import { clearCart } from '../store/slices/cartSlice';
 import { RootStackParamList } from '../types/navigation';
 import CartBadge from '../components/CartBadge';
 
@@ -14,6 +17,41 @@ import PaymentSummaryScreen from '../screens/PaymentSummaryScreen';
 import TransactionResultScreen from '../screens/TransactionResultScreen';
 
 const Stack = createStackNavigator<RootStackParamList>();
+
+const ClearCartButton: React.FC = () => {
+  const dispatch = useAppDispatch();
+
+  const handleClearCart = () => {
+    Alert.alert(
+      'Vaciar carrito',
+      '¿Estás seguro de que quieres vaciar todo el carrito?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        { 
+          text: 'Vaciar', 
+          style: 'destructive',
+          onPress: () => dispatch(clearCart())
+        }
+      ]
+    );
+  };
+
+  return (
+    <TouchableOpacity
+      onPress={handleClearCart}
+      style={{ 
+        marginRight: 16,
+        padding: 8,
+        borderRadius: 6,
+        backgroundColor: 'rgba(255, 255, 255, 0.1)'
+      }}
+    >
+      <Text style={{ color: '#ffffff', fontSize: 18 }}>
+        🗑️
+      </Text>
+    </TouchableOpacity>
+  );
+};
 
 const AppNavigator: React.FC = () => {
   return (
@@ -53,12 +91,15 @@ const AppNavigator: React.FC = () => {
       <Stack.Screen 
         name="ProductSelection" 
         component={ProductSelectionScreen}
-        options={{ title: 'Mi Carrito' }}
+        options={{ 
+          title: 'Mi Carrito',
+          headerRight: () => <ClearCartButton />
+        }}
       />
       <Stack.Screen 
         name="Checkout" 
         component={CheckoutScreen}
-        options={{ title: 'Checkout' }}
+        options={{ title: 'Resumen de Compra' }}
       />
       <Stack.Screen 
         name="CreditCardForm" 

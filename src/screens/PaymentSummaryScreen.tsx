@@ -54,7 +54,7 @@ const PaymentSummaryScreen: React.FC<Props> = ({ navigation }) => {
         const transactionId = Date.now().toString();
         dispatch(clearCart());
         setShowModal(false);
-        navigation.navigate('TransactionResult', { transactionId });
+        navigation.replace('TransactionResult', { transactionId });
       } else {
         throw new Error('Error procesando el pago');
       }
@@ -72,8 +72,6 @@ const PaymentSummaryScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Resumen de Pago</Text>
-      
       <View style={styles.cardSection}>
         <Text style={styles.sectionTitle}>Método de Pago</Text>
         <View style={styles.cardInfo}>
@@ -132,15 +130,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ffffff',
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    margin: 20,
-    color: '#333333',
-    textAlign: 'center',
-  },
   cardSection: {
     margin: 20,
+    marginTop: 30,
     padding: 16,
     backgroundColor: '#f8f9fa',
     borderRadius: 12,
@@ -153,7 +145,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     color: '#333333',
-    marginBottom: 12,
+    marginBottom: 24,
   },
   cardInfo: {
     backgroundColor: '#ffffff',
@@ -170,6 +162,7 @@ const styles = StyleSheet.create({
   productsSection: {
     flex: 1,
     margin: 20,
+    marginTop: 30,
   },
   cartList: {
     maxHeight: 200,

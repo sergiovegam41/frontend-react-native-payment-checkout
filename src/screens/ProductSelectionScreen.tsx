@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,6 +10,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { useFocusEffect } from '@react-navigation/native';
 import { RootStackParamList } from '../types/navigation';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { removeFromCart, updateCartItemQuantity, clearCart } from '../store/slices/cartSlice';
@@ -106,7 +107,10 @@ const ProductSelectionScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const handleContinueShopping = () => {
-    navigation.navigate('ProductsHome');
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'ProductsHome' }],
+    });
   };
 
   const renderCartItem = ({ item }: { item: CartItem }) => (
@@ -191,22 +195,6 @@ const ProductSelectionScreen: React.FC<Props> = ({ navigation }) => {
         renderEmptyCart()
       ) : (
         <>
-          <View style={styles.header}>
-            <Text style={styles.title}>Mi Carrito</Text>
-            <TouchableOpacity onPress={handleClearCart}>
-              <Text style={styles.clearButton}>Vaciar carrito</Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.summaryContainer}>
-            <Text style={styles.summaryText}>
-              {totalItems} {totalItems === 1 ? 'producto' : 'productos'}
-            </Text>
-            <Text style={styles.totalAmount}>
-              Total: {formatPrice(totalAmount.toString())}
-            </Text>
-          </View>
-
           <FlatList
             data={items}
             renderItem={renderCartItem}
@@ -216,6 +204,12 @@ const ProductSelectionScreen: React.FC<Props> = ({ navigation }) => {
           />
 
           <View style={styles.bottomContainer}>
+            <View style={styles.summaryRow}>
+              <Text style={styles.itemsCount}>
+                {totalItems} {totalItems === 1 ? 'producto' : 'productos'}
+              </Text>
+            </View>
+            
             <View style={styles.totalContainer}>
               <Text style={styles.totalLabel}>Total a pagar:</Text>
               <Text style={styles.totalPrice}>
@@ -259,46 +253,19 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F8F9FA',
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    backgroundColor: '#FFFFFF',
+  summaryRow: {
+    paddingBottom: 8,
     borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
+    borderBottomColor: '#E9ECEF',
+    marginBottom: 12,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333333',
-  },
-  clearButton: {
-    color: '#D32F2F',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  summaryContainer: {
-    backgroundColor: '#FFFFFF',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  summaryText: {
+  itemsCount: {
     fontSize: 16,
     color: '#666666',
-  },
-  totalAmount: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#2E7D32',
+    textAlign: 'center',
   },
   listContent: {
+    paddingTop: 16,
     paddingBottom: 20,
   },
   cartItem: {
@@ -448,6 +415,7 @@ const styles = StyleSheet.create({
     color: '#333333',
     fontSize: 16,
     fontWeight: 'bold',
+    textAlign: 'center',
   },
   checkoutButton: {
     flex: 2,
@@ -461,6 +429,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: 'bold',
+    textAlign: 'center',
   },
   emptyContainer: {
     flex: 1,

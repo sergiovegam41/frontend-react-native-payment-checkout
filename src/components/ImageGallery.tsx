@@ -7,6 +7,8 @@ import {
   Dimensions,
   TouchableOpacity,
   Text,
+  Animated,
+  Easing,
 } from 'react-native';
 import { ProductImage } from '../types/api';
 
@@ -20,6 +22,7 @@ const { width } = Dimensions.get('window');
 const ImageGallery: React.FC<Props> = ({ images, height = width * 0.8 }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const scrollRef = useRef<ScrollView>(null);
+  const fadeAnim = useRef(new Animated.Value(1)).current;
 
   const sortedImages = images.sort((a, b) => a.position - b.position);
 
@@ -27,6 +30,25 @@ const ImageGallery: React.FC<Props> = ({ images, height = width * 0.8 }) => {
     const scrollX = event.nativeEvent.contentOffset.x;
     const index = Math.round(scrollX / width);
     setActiveIndex(index);
+  };
+
+  const handleScrollBegin = () => {
+    // Fade out when scrolling starts
+    Animated.timing(fadeAnim, {
+      toValue: 0,
+      duration: 100,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const handleScrollEnd = () => {
+    // Fade in when scrolling ends
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 5,
+      useNativeDriver: true,
+      easing: Easing.in(Easing.ease),
+    }).start();
   };
 
   const scrollToImage = (index: number) => {
@@ -49,83 +71,94 @@ const ImageGallery: React.FC<Props> = ({ images, height = width * 0.8 }) => {
   }
 
   return (
-    <View style={[styles.container, { height }]}>
+    <View style={styles.container}>
       {/* Main Image Gallery */}
-      <ScrollView
-        ref={scrollRef}
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        onMomentumScrollEnd={handleScroll}
-        scrollEventThrottle={16}
-        style={styles.mainScrollView}
-      >
-        {sortedImages.map((image, index) => (
-          <View key={image.id} style={styles.imageContainer}>
-            <Image
-              source={{ uri: image.url }}
-              style={[styles.mainImage, { width, height }]}
-              resizeMode="cover"
-            />
-            {image.altText && (
-              <View style={styles.altTextContainer}>
-                <Text style={styles.altText}>{image.altText}</Text>
-              </View>
-            )}
-          </View>
-        ))}
-      </ScrollView>
-
-      {/* Dots Indicator */}
-      {sortedImages.length > 1 && (
-        <View style={styles.dotsContainer}>
-          {sortedImages.map((_, index) => (
-            <TouchableOpacity
-              key={index}
-              style={[
-                styles.dot,
-                activeIndex === index ? styles.activeDot : styles.inactiveDot,
-              ]}
-              onPress={() => scrollToImage(index)}
-            />
-          ))}
-        </View>
-      )}
-
-      {/* Image Counter */}
-      {sortedImages.length > 1 && (
-        <View style={styles.counterContainer}>
-          <Text style={styles.counterText}>
-            {activeIndex + 1} / {sortedImages.length}
-          </Text>
-        </View>
-      )}
-
-      {/* Thumbnail Strip (if more than 2 images) */}
-      {sortedImages.length > 2 && (
+      <View style={[styles.mainImageContainer, { height }]}>
         <ScrollView
+          ref={scrollRef}
           horizontal
+          pagingEnabled
           showsHorizontalScrollIndicator={false}
-          style={styles.thumbnailStrip}
-          contentContainerStyle={styles.thumbnailContent}
+          onMomentumScrollEnd={handleScrollEnd}
+          onScrollBeginDrag={handleScrollBegin}
+          onScroll={handleScroll}
+          scrollEventThrottle={16}
+          style={styles.mainScrollView}
         >
           {sortedImages.map((image, index) => (
-            <TouchableOpacity
-              key={image.id}
-              onPress={() => scrollToImage(index)}
-              style={[
-                styles.thumbnailContainer,
-                activeIndex === index && styles.activeThumbnail,
-              ]}
-            >
+            <View key={image.id} style={styles.imageContainer}>
               <Image
                 source={{ uri: image.url }}
-                style={styles.thumbnail}
+                style={[styles.mainImage, { width, height }]}
                 resizeMode="cover"
               />
-            </TouchableOpacity>
+              {image.altText && (
+                <Animated.View 
+                  style={[
+                    styles.altTextContainer,
+                    { opacity: fadeAnim }
+                  ]}
+                >
+                  <Text style={styles.altText}>{image.altText}</Text>
+                </Animated.View>
+              )}
+            </View>
           ))}
         </ScrollView>
+
+        {/* Dots Indicator - only show if no thumbnails */}
+        {sortedImages.length > 1 && sortedImages.length <= 2 && (
+          <View style={styles.dotsContainer}>
+            {sortedImages.map((_, index) => (
+              <TouchableOpacity
+                key={index}
+                style={[
+                  styles.dot,
+                  activeIndex === index ? styles.activeDot : styles.inactiveDot,
+                ]}
+                onPress={() => scrollToImage(index)}
+              />
+            ))}
+          </View>
+        )}
+
+        {/* Image Counter */}
+        {sortedImages.length > 1 && (
+          <View style={styles.counterContainer}>
+            <Text style={styles.counterText}>
+              {activeIndex + 1} / {sortedImages.length}
+            </Text>
+          </View>
+        )}
+      </View>
+
+      {/* Thumbnail Strip (if more than 2 images) - moved outside main container */}
+      {sortedImages.length > 2 && (
+        <View style={styles.thumbnailSection}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.thumbnailStrip}
+            contentContainerStyle={styles.thumbnailContent}
+          >
+            {sortedImages.map((image, index) => (
+              <TouchableOpacity
+                key={image.id}
+                onPress={() => scrollToImage(index)}
+                style={[
+                  styles.thumbnailContainer,
+                  activeIndex === index && styles.activeThumbnail,
+                ]}
+              >
+                <Image
+                  source={{ uri: image.url }}
+                  style={styles.thumbnail}
+                  resizeMode="cover"
+                />
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
       )}
     </View>
   );
@@ -134,6 +167,8 @@ const ImageGallery: React.FC<Props> = ({ images, height = width * 0.8 }) => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#FFFFFF',
+  },
+  mainImageContainer: {
     position: 'relative',
   },
   mainScrollView: {
@@ -161,16 +196,18 @@ const styles = StyleSheet.create({
   },
   altTextContainer: {
     position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
+    top: 16,
+    right: 70 ,
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    padding: 8,
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    maxWidth: '60%',
   },
   altText: {
     color: '#FFFFFF',
     fontSize: 12,
-    textAlign: 'center',
+    textAlign: 'left',
   },
   dotsContainer: {
     flexDirection: 'row',
@@ -207,11 +244,11 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: 'bold',
   },
+  thumbnailSection: {
+    backgroundColor: '#F8F9FA',
+    paddingVertical: 12,
+  },
   thumbnailStrip: {
-    position: 'absolute',
-    bottom: 60,
-    left: 0,
-    right: 0,
     height: 60,
   },
   thumbnailContent: {

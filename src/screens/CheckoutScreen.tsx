@@ -51,8 +51,6 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Resumen de Compra</Text>
-      
       {items.length === 0 ? (
         <View style={styles.emptyCart}>
           <Text style={styles.emptyCartText}>Tu carrito está vacío</Text>
@@ -64,6 +62,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
             renderItem={renderCartItem}
             keyExtractor={(item) => item.product.id}
             style={styles.cartList}
+            contentContainerStyle={styles.cartListContent}
             showsVerticalScrollIndicator={false}
           />
           
@@ -91,16 +90,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ffffff',
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    margin: 20,
-    color: '#333333',
-    textAlign: 'center',
-  },
   cartList: {
     flex: 1,
     paddingHorizontal: 20,
+  },
+  cartListContent: {
+    paddingTop: 24,
   },
   cartItem: {
     flexDirection: 'row',

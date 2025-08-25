@@ -149,6 +149,20 @@ const CreditCardFormScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const cardType = detectCardType(formData.cardNumber);
+  
+  // Check if form is valid for button state
+  const isFormValid = () => {
+    return (
+      formData.cardNumber.trim() &&
+      validateCardNumber(formData.cardNumber) &&
+      formData.holderName.trim().length >= 3 &&
+      formData.expirationMonth &&
+      formData.expirationYear &&
+      validateExpiryDate(formData.expirationMonth, `20${formData.expirationYear}`) &&
+      formData.cvv.trim() &&
+      validateCVV(formData.cvv)
+    );
+  };
 
   return (
     <KeyboardAvoidingView 
@@ -157,7 +171,6 @@ const CreditCardFormScreen: React.FC<Props> = ({ navigation }) => {
     >
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.content}>
-          <Text style={styles.title}>Información de Tarjeta</Text>
           <Text style={styles.subtitle}>
             Ingresa los datos de tu tarjeta de crédito de forma segura
           </Text>
@@ -208,22 +221,19 @@ const CreditCardFormScreen: React.FC<Props> = ({ navigation }) => {
             </View>
           </View>
 
-          {cardType !== 'UNKNOWN' && (
-            <View style={styles.cardTypeInfo}>
-              <Text style={styles.cardTypeTitle}>Tarjeta Detectada:</Text>
-              <Text style={styles.cardTypeName}>{cardType}</Text>
-              <Text style={styles.cardTypeDescription}>
-                {cardType === 'VISA' ? '✓ Tarjeta VISA válida' : '✓ Tarjeta MasterCard válida'}
-              </Text>
-            </View>
-          )}
-
           <TouchableOpacity 
-            style={[styles.submitButton, isSubmitting && styles.submittingButton]}
+            style={[
+              styles.submitButton, 
+              isSubmitting && styles.submittingButton,
+              !isFormValid() && styles.disabledButton
+            ]}
             onPress={handleSubmit}
-            disabled={isSubmitting}
+            disabled={isSubmitting || !isFormValid()}
           >
-            <Text style={styles.submitButtonText}>
+            <Text style={[
+              styles.submitButtonText,
+              !isFormValid() && styles.disabledButtonText
+            ]}>
               {isSubmitting ? 'Validando...' : 'Continuar al Resumen'}
             </Text>
           </TouchableOpacity>
@@ -247,13 +257,6 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 20,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 8,
-    color: '#333333',
-    textAlign: 'center',
   },
   subtitle: {
     fontSize: 16,
@@ -282,34 +285,11 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'flex-start',
     gap: 12,
   },
   halfWidth: {
     flex: 1,
-  },
-  cardTypeInfo: {
-    backgroundColor: '#E8F5E8',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 24,
-    borderLeftWidth: 4,
-    borderLeftColor: '#2E7D32',
-  },
-  cardTypeTitle: {
-    fontSize: 14,
-    color: '#666666',
-    marginBottom: 4,
-  },
-  cardTypeName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#2E7D32',
-    marginBottom: 4,
-  },
-  cardTypeDescription: {
-    fontSize: 14,
-    color: '#2E7D32',
-    fontWeight: '600',
   },
   submitButton: {
     backgroundColor: '#2E7D32',
@@ -324,11 +304,17 @@ const styles = StyleSheet.create({
   submittingButton: {
     backgroundColor: '#81C784',
   },
+  disabledButton: {
+    backgroundColor: '#E0E0E0',
+  },
   submitButtonText: {
     color: '#ffffff',
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  disabledButtonText: {
+    color: '#999999',
   },
   securityNote: {
     fontSize: 12,
