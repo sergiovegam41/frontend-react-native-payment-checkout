@@ -12,8 +12,10 @@ import {
   clearCurrentTransaction 
 } from '../store/slices/paymentSlice';
 import { paymentApi } from '../services/paymentApi';
+import { ENV } from '../config/environment';
 import LoadingIndicator from '../components/LoadingIndicator';
 import CustomModal from '../components/CustomModal';
+import { Theme, createStyle } from '../theme';
 
 type PaymentSummaryNavigationProp = StackNavigationProp<RootStackParamList, 'PaymentSummary'>;
 
@@ -145,12 +147,12 @@ const PaymentSummaryScreen: React.FC<Props> = ({ navigation }) => {
         } catch (error) {
           console.error('Error checking transaction status:', error);
         }
-      }, 3000); // Check every 3 seconds
+      }, ENV.PAYMENT.POLLING_INTERVAL);
 
-      // Clear interval after 2 minutes
+      // Clear interval after configured timeout
       const timeout = setTimeout(() => {
         clearInterval(interval);
-      }, 120000);
+      }, ENV.PAYMENT.POLLING_TIMEOUT);
 
       return () => {
         clearInterval(interval);
@@ -227,42 +229,37 @@ const PaymentSummaryScreen: React.FC<Props> = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#ffffff',
+    ...createStyle.layout.screenContainer(),
+    paddingHorizontal: 0,
   },
   cardSection: {
-    margin: 20,
-    marginTop: 30,
-    padding: 16,
-    backgroundColor: '#f8f9fa',
-    borderRadius: 12,
-    elevation: 2,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
+    margin: Theme.spacing.layout.containerPadding,
+    marginTop: Theme.spacing.lg + Theme.spacing.md,
+    padding: Theme.spacing.base,
+    backgroundColor: Theme.colors.background.secondary,
+    borderRadius: Theme.spacing.card.borderRadius,
+    ...Theme.shadows.sm,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#333333',
-    marginBottom: 24,
+    ...createStyle.text.heading(4),
+    marginBottom: Theme.spacing.xl,
   },
   cardInfo: {
-    backgroundColor: '#ffffff',
-    padding: 12,
-    borderRadius: 8,
+    backgroundColor: Theme.colors.background.surface,
+    padding: Theme.spacing.md,
+    borderRadius: Theme.borderRadius.base,
     borderWidth: 1,
-    borderColor: '#e9ecef',
+    borderColor: Theme.colors.border.light,
   },
   cardText: {
-    fontSize: 16,
-    color: '#495057',
-    marginBottom: 4,
+    ...Theme.typography.textStyles.body,
+    color: Theme.colors.text.secondary,
+    marginBottom: Theme.spacing.xs,
   },
   productsSection: {
     flex: 1,
-    margin: 20,
-    marginTop: 10,
+    margin: Theme.spacing.layout.containerPadding,
+    marginTop: Theme.spacing.sm,
   },
   cartList: {
     flex: 1,
@@ -271,37 +268,36 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    backgroundColor: '#ffffff',
-    borderRadius: 8,
-    marginBottom: 8,
+    paddingVertical: Theme.spacing.md,
+    paddingHorizontal: Theme.spacing.base,
+    backgroundColor: Theme.colors.background.surface,
+    borderRadius: Theme.borderRadius.base,
+    marginBottom: Theme.spacing.sm,
     borderWidth: 1,
-    borderColor: '#e9ecef',
+    borderColor: Theme.colors.border.light,
   },
   productInfo: {
     flex: 1,
   },
   productName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333333',
-    marginBottom: 4,
+    ...Theme.typography.textStyles.body,
+    fontWeight: Theme.typography.fontWeight.semibold,
+    color: Theme.colors.text.primary,
+    marginBottom: Theme.spacing.xs,
   },
   quantity: {
-    fontSize: 14,
-    color: '#666666',
+    ...Theme.typography.textStyles.bodySmall,
+    color: Theme.colors.text.secondary,
   },
   subtotal: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1976D2',
+    ...Theme.typography.textStyles.price,
+    color: Theme.colors.secondary.main,
   },
   totalContainer: {
-    backgroundColor: '#f0f2f5',
-    padding: 20,
+    backgroundColor: Theme.colors.background.tertiary,
+    padding: Theme.spacing.layout.containerPadding,
     borderTopWidth: 1,
-    borderTopColor: '#e9ecef',
+    borderTopColor: Theme.colors.border.light,
   },
   totalRow: {
     flexDirection: 'row',
@@ -309,62 +305,47 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   totalLabel: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#333333',
+    ...createStyle.text.heading(4),
   },
   totalAmount: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#1976D2',
+    ...Theme.typography.textStyles.priceLarge,
+    color: Theme.colors.secondary.main,
   },
   payButton: {
-    backgroundColor: '#F57C00',
-    marginHorizontal: 20,
-    marginVertical: 16,
-    paddingVertical: 16,
-    borderRadius: 12,
-    elevation: 3,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    ...createStyle.button('payment'),
+    marginHorizontal: Theme.spacing.layout.containerPadding,
+    marginVertical: Theme.spacing.base,
+    paddingVertical: Theme.spacing.button.paddingLarge,
+    borderRadius: Theme.spacing.card.borderRadius,
+    ...Theme.shadows.md,
   },
   payButtonDisabled: {
-    backgroundColor: '#cccccc',
+    backgroundColor: Theme.colors.neutral.gray[400],
   },
   payButtonText: {
-    color: '#ffffff',
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    ...createStyle.text.button('large'),
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: Theme.colors.background.overlay,
+    ...createStyle.layout.centerContent(),
   },
   modalContent: {
-    backgroundColor: '#ffffff',
-    padding: 32,
-    borderRadius: 16,
+    backgroundColor: Theme.colors.background.surface,
+    padding: Theme.spacing.modal.padding + Theme.spacing.sm,
+    borderRadius: Theme.spacing.modal.borderRadius,
     alignItems: 'center',
-    elevation: 5,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
+    ...Theme.shadows.xl,
   },
   modalText: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#333333',
-    marginTop: 16,
+    ...createStyle.text.heading(4),
+    marginTop: Theme.spacing.base,
     textAlign: 'center',
   },
   modalSubtext: {
-    fontSize: 14,
-    color: '#666666',
-    marginTop: 8,
+    ...Theme.typography.textStyles.bodySmall,
+    color: Theme.colors.text.secondary,
+    marginTop: Theme.spacing.sm,
     textAlign: 'center',
   },
 });

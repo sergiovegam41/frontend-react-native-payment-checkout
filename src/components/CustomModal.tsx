@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
+import { Theme, createStyle } from '../theme';
 
 interface CustomModalProps {
   visible: boolean;
@@ -108,79 +109,72 @@ const CustomModal: React.FC<CustomModalProps> = ({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
+    backgroundColor: Theme.colors.background.overlay,
+    ...createStyle.layout.centerContent(),
+    padding: Theme.spacing.layout.containerPadding,
   },
   modalContent: {
-    backgroundColor: '#ffffff',
-    borderRadius: 16,
-    padding: 24,
+    backgroundColor: Theme.colors.background.surface,
+    borderRadius: Theme.spacing.modal.borderRadius,
+    padding: Theme.spacing.modal.padding,
     width: MODAL_WIDTH,
     maxWidth: 400,
     alignItems: 'center',
-    elevation: 8,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
+    ...Theme.shadows.lg,
   },
   icon: {
-    fontSize: 32,
-    marginBottom: 16,
+    fontSize: Theme.typography.fontSize['4xl'],
+    marginBottom: Theme.spacing.base,
   },
   title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333333',
+    ...createStyle.text.heading(3),
     textAlign: 'center',
-    marginBottom: 12,
+    marginBottom: Theme.spacing.md,
   },
   message: {
-    fontSize: 16,
-    color: '#666666',
+    ...Theme.typography.textStyles.body,
+    color: Theme.colors.text.secondary,
     textAlign: 'center',
-    lineHeight: 22,
-    marginBottom: 24,
+    lineHeight: Theme.typography.lineHeight.normal * Theme.typography.fontSize.base,
+    marginBottom: Theme.spacing.xl,
   },
   buttonsContainer: {
     flexDirection: 'row',
-    gap: 12,
+    gap: Theme.spacing.md,
     width: '100%',
   },
   button: {
     flex: 1,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 8,
+    paddingVertical: Theme.spacing.md,
+    paddingHorizontal: Theme.spacing.base,
+    borderRadius: Theme.borderRadius.base,
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: 44,
   },
   defaultButton: {
-    backgroundColor: '#2E7D32',
+    backgroundColor: Theme.colors.primary.main,
   },
   cancelButton: {
-    backgroundColor: '#F5F5F5',
+    backgroundColor: Theme.colors.neutral.gray[100],
     borderWidth: 1,
-    borderColor: '#E0E0E0',
+    borderColor: Theme.colors.border.main,
   },
   destructiveButton: {
-    backgroundColor: '#D32F2F',
+    backgroundColor: Theme.colors.status.error,
   },
   buttonText: {
-    fontSize: 16,
-    fontWeight: '600',
+    ...Theme.typography.textStyles.button,
     textAlign: 'center',
   },
   defaultButtonText: {
-    color: '#ffffff',
+    color: Theme.colors.text.inverse,
   },
   cancelButtonText: {
-    color: '#333333',
+    color: Theme.colors.text.primary,
   },
   destructiveButtonText: {
-    color: '#ffffff',
+    color: Theme.colors.text.inverse,
   },
 });
 

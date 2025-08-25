@@ -8,6 +8,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { Product } from '../types/api';
+import { Theme, createStyle } from '../theme';
 
 interface Props {
   product: Product;
@@ -34,13 +35,13 @@ const ProductCard: React.FC<Props> = ({ product, onPress }) => {
 
   const getStockStatus = (stock: number): { text: string; color: string } => {
     if (stock === 0) {
-      return { text: 'Agotado', color: '#D32F2F' };
+      return { text: 'Agotado', color: Theme.colors.status.error };
     } else if (stock < 10) {
-      return { text: `Solo ${stock} disponibles`, color: '#F57C00' };
+      return { text: `Solo ${stock} disponibles`, color: Theme.colors.status.warning };
     } else if (stock < 20) {
-      return { text: 'Pocas unidades', color: '#F57C00' };
+      return { text: 'Pocas unidades', color: Theme.colors.status.warning };
     }
-    return { text: 'En stock', color: '#2E7D32' };
+    return { text: 'En stock', color: Theme.colors.status.success };
   };
 
   const stockStatus = getStockStatus(product.stock);
@@ -92,81 +93,77 @@ const ProductCard: React.FC<Props> = ({ product, onPress }) => {
 const styles = StyleSheet.create({
   card: {
     width: CARD_WIDTH,
-    height: CARD_WIDTH * 1.65, // Increased height for 3 lines in product name
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    marginBottom: 16,
-    marginHorizontal: 6, // Increased horizontal margin
-    elevation: 3,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    height: CARD_WIDTH * 1.65,
+    backgroundColor: Theme.colors.background.surface,
+    borderRadius: Theme.spacing.card.borderRadius,
+    marginBottom: Theme.spacing.base,
+    marginHorizontal: Theme.spacing.xs + 2,
+    ...Theme.shadows.base,
   },
   imageContainer: {
     position: 'relative',
     width: '100%',
-    height: CARD_WIDTH * 0.6, // Slightly reduced image height
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
+    height: CARD_WIDTH * 0.6,
+    borderTopLeftRadius: Theme.spacing.card.borderRadius,
+    borderTopRightRadius: Theme.spacing.card.borderRadius,
     overflow: 'hidden',
   },
   image: {
     width: '100%',
     height: '100%',
-    backgroundColor: '#F5F5F5',
+    backgroundColor: Theme.colors.neutral.gray[100],
   },
   imageCount: {
     position: 'absolute',
-    top: 8,
-    right: 8,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    borderRadius: 12,
-    paddingHorizontal: 6,
+    top: Theme.spacing.sm,
+    right: Theme.spacing.sm,
+    backgroundColor: Theme.colors.background.overlay,
+    borderRadius: Theme.spacing.card.borderRadius,
+    paddingHorizontal: Theme.spacing.xs + 2,
     paddingVertical: 2,
   },
   imageCountText: {
-    color: '#FFFFFF',
-    fontSize: 10,
-    fontWeight: 'bold',
+    color: Theme.colors.text.inverse,
+    fontSize: Theme.typography.fontSize.xs,
+    fontWeight: Theme.typography.fontWeight.bold,
   },
   content: {
     flex: 1,
-    padding: 12,
+    padding: Theme.spacing.md,
     justifyContent: 'space-between',
   },
   name: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#333333',
-    marginBottom: 6,
+    ...Theme.typography.textStyles.bodySmall,
+    fontWeight: Theme.typography.fontWeight.bold,
+    color: Theme.colors.text.primary,
+    marginBottom: Theme.spacing.xs + 2,
     lineHeight: 18,
-    height: 36, // Fixed height for exactly 2 lines (18px * 2)
+    height: 36,
   },
   description: {
-    fontSize: 12,
-    color: '#666666',
+    fontSize: Theme.typography.fontSize.sm,
+    color: Theme.colors.text.secondary,
     lineHeight: 16,
-    height: 48, // Fixed height for exactly 3 lines (16px * 3)
-    marginBottom: 8,
+    height: 48,
+    marginBottom: Theme.spacing.sm,
   },
   footer: {
-    marginTop: 'auto', // Push to bottom
+    marginTop: 'auto',
   },
   price: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#2E7D32',
-    marginBottom: 6,
+    ...Theme.typography.textStyles.price,
+    color: Theme.colors.primary.main,
+    marginBottom: Theme.spacing.xs + 2,
   },
   stockText: {
-    fontSize: 11,
-    fontWeight: '600',
-    paddingHorizontal: 8,
+    ...Theme.typography.textStyles.caption,
+    fontWeight: Theme.typography.fontWeight.semibold,
+    paddingHorizontal: Theme.spacing.sm,
     paddingVertical: 3,
-    backgroundColor: 'rgba(46, 125, 50, 0.1)',
-    borderRadius: 4,
+    backgroundColor: `${Theme.colors.primary.main}1A`,
+    borderRadius: Theme.borderRadius.xs,
     textAlign: 'center',
-    alignSelf: 'flex-start', // Prevent stretching
+    alignSelf: 'flex-start',
   },
 });
 

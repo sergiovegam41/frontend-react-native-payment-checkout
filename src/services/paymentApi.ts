@@ -5,65 +5,99 @@ import {
   PaymentError,
   TransactionState,
 } from '../types/payment';
+import { BaseApiService, API_CONFIG } from './apiConfig';
 
-// This will be updated when backend is ready
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api/v1';
-
-class PaymentApiService {
-  private async makeRequest<T>(
-    endpoint: string,
-    options: RequestInit = {}
-  ): Promise<T> {
-    try {
-      const url = `${API_BASE_URL}${endpoint}`;
-      const response = await fetch(url, {
-        headers: {
-          'Content-Type': 'application/json',
-          ...options.headers,
-        },
-        ...options,
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error('Payment API Error:', error);
-      throw error;
-    }
-  }
+class PaymentApiService extends BaseApiService {
 
   /**
    * Create a new transaction
    */
   async createTransaction(request: CreateTransactionRequest): Promise<CreateTransactionResponse> {
-    // For now, simulate the API call with proper structure
-    // This will be replaced with actual API call when backend is ready
-    return this.simulateCreateTransaction(request);
+    try {
+      // When backend is ready, use this:
+      // return await this.makeRequest<CreateTransactionResponse>(
+      //   API_CONFIG.ENDPOINTS.TRANSACTIONS, 
+      //   {
+      //     method: 'POST',
+      //     body: JSON.stringify(request),
+      //   }
+      // );
+
+      // For now, simulate the API call with proper structure
+      return this.simulateCreateTransaction(request);
+    } catch (error) {
+      console.error('Create transaction error:', error);
+      throw error;
+    }
   }
 
   /**
    * Check transaction status
    */
   async checkTransactionStatus(transactionId: string): Promise<CheckTransactionStatusResponse> {
-    // For now, simulate the API call
-    // This will be replaced with actual API call when backend is ready
-    return this.simulateCheckStatus(transactionId);
+    try {
+      // When backend is ready, use this:
+      // return await this.makeRequest<CheckTransactionStatusResponse>(
+      //   `${API_CONFIG.ENDPOINTS.TRANSACTIONS}/${transactionId}`,
+      //   { method: 'GET' }
+      // );
+
+      // For now, simulate the API call
+      return this.simulateCheckStatus(transactionId);
+    } catch (error) {
+      console.error('Check transaction status error:', error);
+      throw error;
+    }
   }
 
   /**
-   * Get all transactions for a user (future feature)
+   * Get all transactions for a user
    */
   async getUserTransactions(customerEmail: string): Promise<TransactionState[]> {
+    const queryString = this.buildQueryString({ customer_email: customerEmail });
+    
     try {
       return await this.makeRequest<TransactionState[]>(
-        `/transactions?customer_email=${encodeURIComponent(customerEmail)}`
+        `${API_CONFIG.ENDPOINTS.TRANSACTIONS}${queryString}`,
+        { method: 'GET' }
       );
     } catch (error) {
-      console.error('Error fetching user transactions:', error);
+      console.error('Get user transactions error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Create payment source (for future tokenization)
+   */
+  async createPaymentSource(request: any): Promise<any> {
+    try {
+      return await this.makeRequest(
+        API_CONFIG.ENDPOINTS.PAYMENT_SOURCES,
+        {
+          method: 'POST',
+          body: JSON.stringify(request),
+        }
+      );
+    } catch (error) {
+      console.error('Create payment source error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get user payment sources
+   */
+  async getPaymentSources(customerEmail: string): Promise<any[]> {
+    const queryString = this.buildQueryString({ customer_email: customerEmail });
+    
+    try {
+      return await this.makeRequest(
+        `${API_CONFIG.ENDPOINTS.PAYMENT_SOURCES}${queryString}`,
+        { method: 'GET' }
+      );
+    } catch (error) {
+      console.error('Get payment sources error:', error);
       throw error;
     }
   }
