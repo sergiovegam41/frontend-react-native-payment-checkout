@@ -36,9 +36,7 @@ const ProductSelectionScreen: React.FC<Props> = ({ navigation }) => {
     buttons: [] as any[]
   });
 
-  const formatPrice = (priceInCents: number): string => {
-    // Convert cents to COP (divide by 100)
-    const priceInCOP = priceInCents / 100;
+  const formatPrice = (priceInCOP: number): string => {
     return `${new Intl.NumberFormat('es-CO', {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,

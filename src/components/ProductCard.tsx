@@ -24,9 +24,8 @@ const CARD_WIDTH = (width - CARD_MARGIN * 2 - HORIZONTAL_CARD_MARGIN * 2) / 2;
 const ProductCard: React.FC<Props> = ({ product, onPress }) => {
   const mainImage = product.images.find(img => img.isMain) || product.images[0];
   
-  const formatPrice = (priceInCents: number): string => {
-    // Convert cents to COP (divide by 100)
-    const priceInCOP = priceInCents / 100;
+  const formatPrice = (priceInCOP: number): string => {
+    
     return new Intl.NumberFormat('es-CO', {
       style: 'currency',
       currency: 'COP',
@@ -82,7 +81,7 @@ const ProductCard: React.FC<Props> = ({ product, onPress }) => {
 
         <View style={styles.footer}>
           <Text style={styles.price}>
-            {formatPrice(product.price)}
+            {formatPrice(product.price)} COP
           </Text>
           
           <Text style={[styles.stockText, { color: stockStatus.color }]}>

@@ -16,9 +16,7 @@ interface Props {
 const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
   const { items, totalAmount } = useSelector((state: RootState) => state.cart);
 
-  const formatPrice = (priceInCents: number) => {
-    // Convert cents to COP (divide by 100)
-    const priceInCOP = priceInCents / 100;
+  const formatPrice = (priceInCOP: number) => {
     return `${priceInCOP.toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} COP`;
   };
 
