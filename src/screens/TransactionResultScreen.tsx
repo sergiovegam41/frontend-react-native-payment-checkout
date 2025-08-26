@@ -81,12 +81,6 @@ const TransactionResultScreen: React.FC<Props> = ({ navigation, route }) => {
         console.log('Max retry attempts reached, stopping auto-refresh');
       }
 
-      if (!fromTimer) {
-        Alert.alert(
-          'Estado Actualizado', 
-          `El estado de la transacción ahora es: ${mappedStatus === 'APPROVED' ? 'PAGADO' : mappedStatus === 'DECLINED' ? 'FALLIDO' : 'PENDIENTE'}`
-        );
-      }
       
     } catch (error: any) {
       console.error('Update status error:', error);
