@@ -3,6 +3,7 @@ import {
   validateCVV,
   validateExpiryDate,
   detectCardType,
+  formatCardNumber,
 } from '../cardValidation';
 
 describe('cardValidation', () => {
@@ -96,13 +97,19 @@ describe('cardValidation', () => {
       expect(validateExpiryDate('99', futureYear)).toBe(false);
     });
 
-    it('should reject invalid formats', () => {
+    it('should handle edge cases and invalid formats', () => {
       expect(validateExpiryDate('1', '2026')).toBe(true); // Month 1 with future year should be valid
       expect(validateExpiryDate('12', '1')).toBe(false); // Single digit year (year 1) is less than current year
-      expect(validateExpiryDate('ab', '2026')).toBe(true); // Non-numeric month becomes NaN, passes month checks due to NaN comparisons
-      expect(validateExpiryDate('12', 'ab')).toBe(true); // parseInt('ab') returns NaN, passes year checks due to NaN comparisons
-      expect(validateExpiryDate('', '2026')).toBe(true); // Empty month becomes NaN, passes checks
-      expect(validateExpiryDate('12', '')).toBe(true); // Empty year becomes NaN, passes checks
+      
+      // Test NaN cases - these should return false due to NaN comparisons
+      expect(validateExpiryDate('ab', '2026')).toBe(false); // Non-numeric month becomes NaN
+      expect(validateExpiryDate('12', 'ab')).toBe(false); // Non-numeric year becomes NaN
+      expect(validateExpiryDate('', '2026')).toBe(false); // Empty month becomes NaN
+      expect(validateExpiryDate('12', '')).toBe(false); // Empty year becomes NaN
+      
+      // Test negative values
+      expect(validateExpiryDate('-1', '2026')).toBe(false); // Negative month
+      expect(validateExpiryDate('12', '-1')).toBe(false); // Negative year
     });
   });
 
@@ -141,6 +148,48 @@ describe('cardValidation', () => {
       expect(detectCardType('56')).toBe('UNKNOWN'); // Not in 51-55 range
       expect(detectCardType('3')).toBe('UNKNOWN'); // AMEX not implemented
       expect(detectCardType('6')).toBe('UNKNOWN'); // Other card types not implemented
+    });
+  });
+
+  describe('formatCardNumber', () => {
+    it('should format card numbers with spaces', () => {
+      expect(formatCardNumber('4242424242424242')).toBe('4242 4242 4242 4242');
+      expect(formatCardNumber('5555555555554444')).toBe('5555 5555 5555 4444');
+      expect(formatCardNumber('1234567890123456')).toBe('1234 5678 9012 3456');
+    });
+
+    it('should handle already formatted numbers', () => {
+      expect(formatCardNumber('4242 4242 4242 4242')).toBe('4242 4242 4242 4242');
+      expect(formatCardNumber('5555 5555 5555 4444')).toBe('5555 5555 5555 4444');
+    });
+
+    it('should handle partial numbers', () => {
+      expect(formatCardNumber('4242')).toBe('4242');
+      expect(formatCardNumber('42424242')).toBe('4242 4242');
+      expect(formatCardNumber('424242424242')).toBe('4242 4242 4242');
+    });
+
+    it('should handle empty and short inputs', () => {
+      expect(formatCardNumber('')).toBe('');
+      expect(formatCardNumber('4')).toBe('4');
+      expect(formatCardNumber('42')).toBe('42');
+      expect(formatCardNumber('424')).toBe('424');
+    });
+
+    it('should limit to 19 characters (16 digits + 3 spaces)', () => {
+      expect(formatCardNumber('42424242424242424242')).toBe('4242 4242 4242 4242');
+      expect(formatCardNumber('1234567890123456789012345')).toBe('1234 5678 9012 3456');
+    });
+
+    it('should handle mixed input with existing spaces', () => {
+      expect(formatCardNumber('4242 424242424242')).toBe('4242 4242 4242 4242');
+      expect(formatCardNumber('42424242 42424242')).toBe('4242 4242 4242 4242');
+    });
+
+    it('should handle non-numeric characters by removing them first', () => {
+      expect(formatCardNumber('4242-4242-4242-4242')).toBe('4242 4242 4242 4242');
+      expect(formatCardNumber('4242.4242.4242.4242')).toBe('4242 4242 4242 4242');
+      expect(formatCardNumber('4242a4242b4242c4242')).toBe('4242 4242 4242 4242');
     });
   });
 });

@@ -1,5 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
+import { Text } from 'react-native';
 import CustomModal from '../CustomModal';
 
 // Mock react-native-vector-icons
@@ -9,8 +10,8 @@ const mockProps = {
   visible: true,
   onClose: jest.fn(),
   title: 'Test Modal',
+  message: 'Test Content',
   icon: 'checkmark-circle',
-  children: <div>Test Content</div>
 };
 
 describe('CustomModal', () => {
@@ -28,7 +29,7 @@ describe('CustomModal', () => {
     expect(getByText('Test Modal')).toBeTruthy();
   });
 
-  it('renders children content', () => {
+  it('renders message content', () => {
     const { getByText } = render(<CustomModal {...mockProps} />);
     expect(getByText('Test Content')).toBeTruthy();
   });

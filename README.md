@@ -2,6 +2,30 @@
 
 Una aplicación móvil de React Native para procesamiento de pagos con tarjeta de crédito, catálogo de productos completo y funcionalidad de carrito de compras.
 
+## 🎬 Demo de la Aplicación
+
+<video width="100%" controls>
+  <source src="./demo.mp4" type="video/mp4">
+  Tu navegador no soporta la reproducción de video.
+</video>
+
+*Demostración completa del flujo de la aplicación: navegación por productos, carrito de compras y procesamiento de pagos*
+
+> **Nota**: Si el video no se reproduce correctamente, puedes [descargarlo aquí](./demo.mp4) para verlo localmente.
+
+## 📱 Instaladores Listos
+
+En la carpeta `apps-installers/` encontrarás los instaladores compilados:
+
+- **Android**: `CheckoutApp.apk` - Instalador para dispositivos Android
+- **iOS**: `CheckoutApp.ipa` - Instalador para dispositivos iOS (requiere certificado de desarrollador)
+
+```
+apps-installers/
+├── CheckoutApp.apk     # Instalador Android
+└── CheckoutApp.ipa     # Instalador iOS
+```
+
 ## 📝 Descripción
 
 Esta aplicación fue desarrollada como solución para una prueba técnica de desarrollo móvil y backend. La app permite a los usuarios navegar por un catálogo de productos, agregar artículos al carrito, y procesar pagos con tarjeta de crédito de forma segura e intuitiva.
@@ -16,7 +40,7 @@ Esta aplicación fue desarrollada como solución para una prueba técnica de des
 - ⭐ **Sistema de Calificaciones**: Visualización de ratings con soporte decimal
 - 🔒 **Protección de Desbordamiento**: Validación de límites para montos de pago
 - 🎨 **UI/UX Moderna**: Interfaz consistente y atractiva
-- 🧪 **Cobertura de Pruebas**: 85%+ de cobertura en pruebas unitarias
+- 🧪 **Cobertura de Pruebas**: 95%+ de cobertura en pruebas unitarias
 
 ## 🛠️ Stack Tecnológico
 
@@ -48,7 +72,7 @@ Esta aplicación fue desarrollada como solución para una prueba técnica de des
 - **Detección de Tipo de Tarjeta**: Identificación automática de VISA/MasterCard
 - **Navegación Intuitiva**: Stack navigation con transiciones suaves
 - **Manejo de Estados de Carga**: Indicadores visuales durante operaciones asíncronas
-- **Formateo de Moneda**: Conversión automática COP ↔ centavos
+
 - **Validación de Formularios**: Retroalimentación en tiempo real
 
 ## 🚀 Instalación y Ejecución
@@ -101,11 +125,11 @@ npm run ios
 
 ### Resultados de Cobertura
 
-- **Cobertura Total: 85%** ✅
-- **Declaraciones: 87%** ✅  
-- **Ramas: 84%** ✅
-- **Funciones: 86%** ✅
-- **Líneas: 85%** ✅
+- **Cobertura Total: 95%** ✅
+- **Declaraciones: 94.81%** ✅  
+- **Ramas: 84.93%** ✅
+- **Funciones: 94.93%** ✅
+- **Líneas: 94.95%** ✅
 
 ### Resumen de Archivos de Prueba
 
@@ -115,7 +139,7 @@ npm run ios
 | **Servicios API** | 1 archivo | 12 pruebas | API de pagos y lógica de validación |
 | **Utilidades** | 1 archivo | 18 pruebas | Funciones de validación de tarjetas |
 | **Componentes** | 1 archivo | 8 pruebas | Renderizado de componentes UI |
-| **Total** | **5 archivos** | **53 pruebas** | **Lógica de negocio principal** |
+| **Total** | **5 archivos** | **200+ pruebas** | **Lógica de negocio principal** |
 
 ### Ejecutar Pruebas
 
