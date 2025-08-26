@@ -1,4 +1,4 @@
-package com.checkoutapp
+package space.ondeploy.checkoutapp
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate

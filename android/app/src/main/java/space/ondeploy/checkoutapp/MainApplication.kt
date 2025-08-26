@@ -1,4 +1,4 @@
-package com.checkoutapp
+package space.ondeploy.checkoutapp
 
 import android.app.Application
 import com.facebook.react.PackageList
