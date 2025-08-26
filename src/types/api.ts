@@ -1,14 +1,23 @@
 export interface ProductImage {
-  id: string;
   url: string;
   altText: string;
   position: number;
   isMain: boolean;
-  createdAt: string;
-  productId: string;
 }
 
 export interface Product {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  stock: number;
+  rating: number; // Rating from 0-5
+  images: ProductImage[];
+  mainImageUrl?: string;
+}
+
+// For backward compatibility during transition
+export interface LegacyProduct {
   id: string;
   name: string;
   description: string;

@@ -30,12 +30,14 @@ const PaymentSummaryScreen: React.FC<Props> = ({ navigation }) => {
     buttons: [] as any[]
   });
 
-  const formatPrice = (price: string) => {
-    return `${parseFloat(price).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} COP`;
+  const formatPrice = (priceInCents: number) => {
+    // Convert cents to COP (divide by 100)
+    const priceInCOP = priceInCents / 100;
+    return `${priceInCOP.toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} COP`;
   };
 
   const renderCartItem = ({ item }: { item: CartItem }) => {
-    const subtotal = parseFloat(item.product.price) * item.quantity;
+    const subtotal = item.product.price * item.quantity; // Already in cents
 
     return (
       <View style={styles.cartItem}>
@@ -43,7 +45,7 @@ const PaymentSummaryScreen: React.FC<Props> = ({ navigation }) => {
           <Text style={styles.productName}>{item.product.name}</Text>
           <Text style={styles.quantity}>Cantidad: {item.quantity} × {formatPrice(item.product.price)}</Text>
         </View>
-        <Text style={styles.subtotal}>{formatPrice(subtotal.toString())}</Text>
+        <Text style={styles.subtotal}>{formatPrice(subtotal)}</Text>
       </View>
     );
   };
@@ -53,6 +55,19 @@ const PaymentSummaryScreen: React.FC<Props> = ({ navigation }) => {
       setModalConfig({
         title: 'Error',
         message: 'Faltan datos para procesar el pago',
+        icon: '⚠️',
+        buttons: [{ text: 'OK' }]
+      });
+      setShowModal(true);
+      return;
+    }
+
+    // Validate total amount to prevent integer overflow (totalAmount is in cents)
+    const totalAmountInCOP = totalAmount / 100;
+    if (!paymentApi.validateTotalAmount(totalAmountInCOP)) {
+      setModalConfig({
+        title: 'Error',
+        message: 'El monto total es demasiado alto para procesar. Por favor reduce la cantidad de productos.',
         icon: '⚠️',
         buttons: [{ text: 'OK' }]
       });
@@ -143,7 +158,7 @@ const PaymentSummaryScreen: React.FC<Props> = ({ navigation }) => {
       <View style={styles.totalContainer}>
         <View style={styles.totalRow}>
           <Text style={styles.totalLabel}>Total Pagar:</Text>
-          <Text style={styles.totalAmount}>{formatPrice(totalAmount.toString())}</Text>
+          <Text style={styles.totalAmount}>{formatPrice(totalAmount)}</Text>
         </View>
       </View>
       

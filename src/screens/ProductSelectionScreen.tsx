@@ -36,12 +36,13 @@ const ProductSelectionScreen: React.FC<Props> = ({ navigation }) => {
     buttons: [] as any[]
   });
 
-  const formatPrice = (price: string): string => {
-    const numPrice = parseFloat(price);
+  const formatPrice = (priceInCents: number): string => {
+    // Convert cents to COP (divide by 100)
+    const priceInCOP = priceInCents / 100;
     return `${new Intl.NumberFormat('es-CO', {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
-    }).format(numPrice)} COP`;
+    }).format(priceInCOP)} COP`;
   };
 
   const handleQuantityChange = (itemId: string, increment: boolean) => {
@@ -170,7 +171,7 @@ const ProductSelectionScreen: React.FC<Props> = ({ navigation }) => {
         </TouchableOpacity>
 
         <Text style={styles.itemTotal}>
-          {formatPrice((parseFloat(item.product.price) * item.quantity).toString())}
+          {formatPrice(item.product.price * item.quantity)}
         </Text>
       </View>
     </View>
@@ -215,7 +216,7 @@ const ProductSelectionScreen: React.FC<Props> = ({ navigation }) => {
             <View style={styles.totalContainer}>
               <Text style={styles.totalLabel}>Total a pagar:</Text>
               <Text style={styles.totalPrice}>
-                {formatPrice(totalAmount.toString())}
+                {formatPrice(totalAmount)}
               </Text>
             </View>
 

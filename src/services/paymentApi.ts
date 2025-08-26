@@ -231,7 +231,7 @@ class PaymentApiService extends BaseApiService {
   // SIMULATION METHODS - Remove when backend is ready
   private async simulateCreateTransaction(request: CreateTransactionRequest): Promise<CreateTransactionResponse> {
     // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise<void>(resolve => setTimeout(resolve, 2000));
 
     // Generate a fake transaction ID
     const transactionId = `txn_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -299,7 +299,7 @@ class PaymentApiService extends BaseApiService {
 
   private async simulateCheckStatus(transactionId: string): Promise<CheckTransactionStatusResponse> {
     // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    await new Promise<void>(resolve => setTimeout(resolve, 1500));
 
     // Simulate random final status
     const finalStatuses = ['APPROVED', 'DECLINED'] as const;
@@ -364,10 +364,16 @@ class PaymentApiService extends BaseApiService {
   }
 
   /**
-   * Format amount from COP to cents
+   * Format amount from COP to cents with overflow protection
    */
   formatAmountToCents(amount: number): number {
-    return Math.round(amount * 100);
+    const cents = Math.round(amount * 100);
+    // PostgreSQL INT4 max value is 2,147,483,647
+    const MAX_INT4 = 2147483647;
+    if (cents > MAX_INT4) {
+      throw new Error(`Amount ${amount} COP (${cents} cents) exceeds maximum allowed value`);
+    }
+    return cents;
   }
 
   /**
@@ -375,6 +381,14 @@ class PaymentApiService extends BaseApiService {
    */
   formatAmountFromCents(amountInCents: number): number {
     return amountInCents / 100;
+  }
+
+  /**
+   * Validate total amount before sending to backend (amount in COP)
+   */
+  validateTotalAmount(amountInCOP: number): boolean {
+    const MAX_AMOUNT_COP = 21474836; // ~21 million COP to stay under INT4 limit in cents
+    return amountInCOP <= MAX_AMOUNT_COP;
   }
 }
 

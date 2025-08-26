@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { Product } from '../types/api';
 import { Theme, createStyle } from '../theme';
+import StarRating from './StarRating';
 
 interface Props {
   product: Product;
@@ -23,14 +24,15 @@ const CARD_WIDTH = (width - CARD_MARGIN * 2 - HORIZONTAL_CARD_MARGIN * 2) / 2;
 const ProductCard: React.FC<Props> = ({ product, onPress }) => {
   const mainImage = product.images.find(img => img.isMain) || product.images[0];
   
-  const formatPrice = (price: string): string => {
-    const numPrice = parseFloat(price);
+  const formatPrice = (priceInCents: number): string => {
+    // Convert cents to COP (divide by 100)
+    const priceInCOP = priceInCents / 100;
     return new Intl.NumberFormat('es-CO', {
       style: 'currency',
       currency: 'COP',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
-    }).format(numPrice);
+    }).format(priceInCOP);
   };
 
   const getStockStatus = (stock: number): { text: string; color: string } => {
@@ -53,14 +55,12 @@ const ProductCard: React.FC<Props> = ({ product, onPress }) => {
       activeOpacity={0.8}
     >
       <View style={styles.imageContainer}>
-        {mainImage && (
-          <Image
-            source={{ uri: mainImage.url }}
-            style={styles.image}
-            resizeMode="cover"
-          />
-        )}
-        {product.images.length > 1 && (
+        <Image
+          source={{ uri: mainImage?.url || product.mainImageUrl || 'https://picsum.photos/640/480/' }}
+          style={styles.image}
+          resizeMode="cover"
+        />
+        {product.images && product.images.length > 1 && (
           <View style={styles.imageCount}>
             <Text style={styles.imageCountText}>+{product.images.length - 1}</Text>
           </View>
@@ -68,13 +68,17 @@ const ProductCard: React.FC<Props> = ({ product, onPress }) => {
       </View>
 
       <View style={styles.content}>
-        <Text style={styles.name} numberOfLines={2}>
+        <Text style={styles.name} numberOfLines={1}>
           {product.name}
         </Text>
         
         <Text style={styles.description} numberOfLines={3}>
           {product.description}
         </Text>
+
+        <View style={styles.ratingContainer}>
+          <StarRating rating={product.rating || 0} size={12} />
+        </View>
 
         <View style={styles.footer}>
           <Text style={styles.price}>
@@ -138,13 +142,16 @@ const styles = StyleSheet.create({
     color: Theme.colors.text.primary,
     marginBottom: Theme.spacing.xs + 2,
     lineHeight: 18,
-    height: 36,
+    height: 18, // Single line height
   },
   description: {
     fontSize: Theme.typography.fontSize.sm,
     color: Theme.colors.text.secondary,
     lineHeight: 16,
     height: 48,
+    marginBottom: Theme.spacing.xs,
+  },
+  ratingContainer: {
     marginBottom: Theme.spacing.sm,
   },
   footer: {

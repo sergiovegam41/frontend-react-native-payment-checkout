@@ -11,7 +11,12 @@
       "Bash(./gradlew:*)",
       "Bash(chmod:*)",
       "Bash(dos2unix:*)",
-      "Bash(npx react-native:*)"
+      "Bash(npx react-native:*)",
+      "Bash(npm run android:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm start:*)",
+      "Bash(npm run lint)",
+      "Bash(npx eslint:*)"
     ],
     "deny": [],
     "ask": []

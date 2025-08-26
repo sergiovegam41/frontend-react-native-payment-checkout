@@ -233,7 +233,7 @@ const TransactionResultScreen: React.FC<Props> = ({ navigation, route }) => {
           style={styles.homeButton}
           onPress={goToHome}
         >
-          <Text style={styles.homeButtonText}>Seguir Comprando</Text>
+          <Text style={styles.homeButtonText}>Volver al Comercio</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -347,7 +347,6 @@ const styles = StyleSheet.create({
   },
   buttonsContainer: {
     width: '100%',
-    paddingHorizontal: 20,
     gap: 12,
   },
   updateButton: {

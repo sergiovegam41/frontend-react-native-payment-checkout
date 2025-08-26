@@ -17,10 +17,12 @@ import { Theme, createStyle } from '../theme';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { addToCart } from '../store/slices/cartSlice';
 import { Product } from '../types/api';
+import { productsApi } from '../services/productsApi';
 
 import ImageGallery from '../components/ImageGallery';
 import LoadingIndicator from '../components/LoadingIndicator';
 import CustomModal from '../components/CustomModal';
+import StarRating from '../components/StarRating';
 
 type ProductDetailNavigationProp = StackNavigationProp<RootStackParamList, 'ProductDetail'>;
 type ProductDetailRouteProp = RouteProp<RootStackParamList, 'ProductDetail'>;
@@ -35,12 +37,12 @@ const { width } = Dimensions.get('window');
 const ProductDetailScreen: React.FC<Props> = ({ navigation, route }) => {
   const { productId } = route.params;
   const dispatch = useAppDispatch();
-  const { products } = useAppSelector(state => state.products);
   const { items: cartItems } = useAppSelector(state => state.cart);
   
   const [product, setProduct] = useState<Product | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalConfig, setModalConfig] = useState({
     title: '',
@@ -50,20 +52,30 @@ const ProductDetailScreen: React.FC<Props> = ({ navigation, route }) => {
   });
 
   useEffect(() => {
-    // Find product in the Redux store (from products list)
-    const foundProduct = products.find(p => p.id === productId);
-    if (foundProduct) {
-      setProduct(foundProduct);
-    }
-    setLoading(false);
-  }, [productId, products]);
+    const fetchProductDetails = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const productDetails = await productsApi.getProductById(productId);
+        setProduct(productDetails);
+      } catch (err) {
+        console.error('Error fetching product details:', err);
+        setError('Error al cargar el producto. Por favor intenta de nuevo.');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const formatPrice = (price: string): string => {
-    const numPrice = parseFloat(price);
+    fetchProductDetails();
+  }, [productId]);
+
+  const formatPrice = (priceInCents: number): string => {
+    // Convert cents to COP (divide by 100)
+    const priceInCOP = priceInCents / 100;
     return `${new Intl.NumberFormat('es-CO', {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
-    }).format(numPrice)} COP`;
+    }).format(priceInCOP)} COP`;
   };
 
   const getStockStatus = (stock: number): { text: string; color: string; available: boolean } => {
@@ -157,6 +169,23 @@ const ProductDetailScreen: React.FC<Props> = ({ navigation, route }) => {
     );
   }
 
+  if (error) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.errorContainer}>
+          <View style={styles.errorTitleContainer}>
+            <Icon name="warning-outline" size={24} color={Theme.colors.text.secondary} />
+            <Text style={styles.errorTitle}>Error</Text>
+          </View>
+          <Text style={styles.errorText}>{error}</Text>
+          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+            <Text style={styles.backButtonText}>Volver</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   if (!product) {
     return (
       <SafeAreaView style={styles.container}>
@@ -191,6 +220,10 @@ const ProductDetailScreen: React.FC<Props> = ({ navigation, route }) => {
           <View style={styles.header}>
             <Text style={styles.name}>{product.name}</Text>
             <Text style={styles.price}>{formatPrice(product.price)}</Text>
+          </View>
+
+          <View style={styles.ratingContainer}>
+            <StarRating rating={product.rating || 0} size={16} />
           </View>
 
           {/* Quantity Selector */}
@@ -285,6 +318,10 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: 'bold',
     color: '#2E7D32',
+  },
+  ratingContainer: {
+    marginTop: 8,
+    marginBottom: 16,
   },
   stockContainer: {
     marginBottom: 20,

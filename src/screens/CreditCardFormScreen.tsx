@@ -194,10 +194,6 @@ const CreditCardFormScreen: React.FC<Props> = ({ navigation }) => {
     >
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.content}>
-          <Text style={styles.subtitle}>
-            Ingresa los datos de tu tarjeta de crédito de forma segura
-          </Text>
-
           <View style={styles.testCardInfo}>
             <Text style={styles.testCardTitle}>💡 Para pruebas usa:</Text>
             <Text style={styles.testCardNumber}>4242 4242 4242 4242</Text>
@@ -207,7 +203,7 @@ const CreditCardFormScreen: React.FC<Props> = ({ navigation }) => {
           <View style={styles.fakeDataContainer}>
             <TouchableOpacity style={styles.fakeDataButton} onPress={updateWithFakeData}>
               <View style={styles.fakeDataButtonContent}>
-                <Icon name="document-text-outline" size={16} color={Theme.colors.secondary.main} />
+                <Icon name="dice-outline" size={16} color={Theme.colors.secondary.main} />
                 <Text style={styles.fakeDataButtonText}>Generar Datos de Prueba</Text>
               </View>
             </TouchableOpacity>
@@ -291,16 +287,9 @@ const styles = StyleSheet.create({
   content: {
     padding: 20,
   },
-  subtitle: {
-    fontSize: 16,
-    color: Theme.colors.text.secondary,
-    textAlign: 'center',
-    marginBottom: 24,
-    lineHeight: 22,
-  },
   fakeDataContainer: {
     marginBottom: 24,
-    alignItems: 'center',
+    alignItems: 'flex-start',
   },
   fakeDataButton: {
     backgroundColor: Theme.colors.secondary.surface,

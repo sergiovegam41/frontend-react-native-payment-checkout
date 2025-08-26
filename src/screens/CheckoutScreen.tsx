@@ -16,13 +16,15 @@ interface Props {
 const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
   const { items, totalAmount } = useSelector((state: RootState) => state.cart);
 
-  const formatPrice = (price: string) => {
-    return `${parseFloat(price).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} COP`;
+  const formatPrice = (priceInCents: number) => {
+    // Convert cents to COP (divide by 100)
+    const priceInCOP = priceInCents / 100;
+    return `${priceInCOP.toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} COP`;
   };
 
   const renderCartItem = ({ item }: { item: CartItem }) => {
-    const mainImage = item.product.images.find(img => img.isMain) || item.product.images[0];
-    const subtotal = parseFloat(item.product.price) * item.quantity;
+    const mainImage = item.product.images?.find(img => img.isMain) || item.product.images?.[0];
+    const subtotal = item.product.price * item.quantity; // Already in cents
 
     return (
       <View style={styles.cartItem}>
@@ -37,7 +39,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
           <Text style={styles.quantity}>Cantidad: {item.quantity}</Text>
         </View>
         <View style={styles.subtotalContainer}>
-          <Text style={styles.subtotal}>{formatPrice(subtotal.toString())}</Text>
+          <Text style={styles.subtotal}>{formatPrice(subtotal)}</Text>
         </View>
       </View>
     );
@@ -71,7 +73,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
           <View style={styles.totalContainer}>
             <View style={styles.totalRow}>
               <Text style={styles.totalLabel}>Total Pagar:</Text>
-              <Text style={styles.totalAmount}>{formatPrice(totalAmount.toString())}</Text>
+              <Text style={styles.totalAmount}>{formatPrice(totalAmount)}</Text>
             </View>
           </View>
           

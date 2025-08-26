@@ -104,7 +104,7 @@ const ImageGallery: React.FC<Props> = ({ images, height = width * 0.8 }) => {
           style={styles.mainScrollView}
         >
           {sortedImages.map((image, index) => (
-            <View key={image.id} style={styles.imageContainer}>
+            <View key={`${image.url}-${image.position}`} style={styles.imageContainer}>
               <Image
                 source={{ uri: image.url }}
                 style={[styles.mainImage, { width, height }]}
@@ -161,7 +161,7 @@ const ImageGallery: React.FC<Props> = ({ images, height = width * 0.8 }) => {
           >
             {sortedImages.map((image, index) => (
               <TouchableOpacity
-                key={image.id}
+                key={`thumb-${image.url}-${image.position}`}
                 onPress={() => scrollToImage(index)}
                 style={[
                   styles.thumbnailContainer,

@@ -227,7 +227,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'center',
-    paddingVertical: 40,
+    paddingVertical: 10,
   },
   emptyTitleContainer: {
     flexDirection: 'row',
