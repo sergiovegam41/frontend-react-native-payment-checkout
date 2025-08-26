@@ -16,7 +16,11 @@
       "Bash(npx tsc:*)",
       "Bash(npm start:*)",
       "Bash(npm run lint)",
-      "Bash(npx eslint:*)"
+      "Bash(npx eslint:*)",
+      "Bash(npm run test:coverage:*)",
+      "Bash(npm test:*)",
+      "Bash(npx jest:*)",
+      "Bash(node:*)"
     ],
     "deny": [],
     "ask": []

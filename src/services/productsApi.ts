@@ -33,7 +33,7 @@ class ProductsApiService extends BaseApiService {
       
       // Transform the response to match our expected structure
       const transformedData: ProductsResponse = {
-        data: data.data.map((product: any) => ({
+        data: data.data.data.map((product: any) => ({
           id: product.id,
           name: product.name,
           description: product.description,
@@ -48,7 +48,7 @@ class ProductsApiService extends BaseApiService {
             isMain: true
           }]
         })),
-        pagination: data.pagination
+        pagination: data.data.pagination
       };
       
       return transformedData;
@@ -76,7 +76,8 @@ class ProductsApiService extends BaseApiService {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
-      const product = await response.json();
+      const response_data = await response.json();
+      const product = response_data.data;
       
       // Transform the response to match our expected structure
       return {

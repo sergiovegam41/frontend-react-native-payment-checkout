@@ -6,7 +6,7 @@ import { RootState } from '../store/store';
 import { RootStackParamList } from '../types/navigation';
 import { CartItem } from '../types/api';
 import { clearCart } from '../store/slices/cartSlice';
-import { paymentApi, CheckoutWithCardResponse } from '../services/paymentApi';
+import { paymentApi, CheckoutWithCardResponse, ApiResponse } from '../services/paymentApi';
 import LoadingIndicator from '../components/LoadingIndicator';
 import CustomModal from '../components/CustomModal';
 import { Theme, createStyle } from '../theme';
@@ -102,7 +102,7 @@ const PaymentSummaryScreen: React.FC<Props> = ({ navigation }) => {
       };
 
       // Call the new checkout API
-      const response: CheckoutWithCardResponse = await paymentApi.checkoutWithCard(checkoutRequest);
+      const response: ApiResponse<CheckoutWithCardResponse> = await paymentApi.checkoutWithCard(checkoutRequest);
       
       // Clear cart on successful payment creation
       dispatch(clearCart());
@@ -112,7 +112,7 @@ const PaymentSummaryScreen: React.FC<Props> = ({ navigation }) => {
       
       // Navigate to result screen with payment data
       navigation.replace('TransactionResult', { 
-        transactionData: response 
+        transactionData: response.data
       });
       
     } catch (error) {

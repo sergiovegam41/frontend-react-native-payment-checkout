@@ -22,7 +22,7 @@ interface CheckoutWithCardRequest {
   };
 }
 
-interface CheckoutWithCardResponse {
+export interface CheckoutWithCardResponse {
   checkout_id: string;
   items: Array<{
     product_id: string;
@@ -46,12 +46,18 @@ interface CheckoutWithCardResponse {
   payment_url?: string;
 }
 
+export interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  timestamp: string;
+}
+
 class PaymentApiService extends BaseApiService {
 
   /**
    * Process payment with card - New API endpoint
    */
-  async checkoutWithCard(request: CheckoutWithCardRequest): Promise<CheckoutWithCardResponse> {
+  async checkoutWithCard(request: CheckoutWithCardRequest): Promise<ApiResponse<CheckoutWithCardResponse>> {
     try {
       const url = 'https://backend-nest-payment-checkout.ondeploy.space/api/v1/product-checkout';
       console.log('Making request to:', url);
@@ -97,7 +103,7 @@ class PaymentApiService extends BaseApiService {
   /**
    * Get checkout status by checkout_id
    */
-  async getCheckoutStatus(checkoutId: string): Promise<CheckoutStatusResponse> {
+  async getCheckoutStatus(checkoutId: string): Promise<ApiResponse<CheckoutStatusResponse>> {
     try {
       const url = `https://backend-nest-payment-checkout.ondeploy.space/api/v1/product-checkout/${checkoutId}/status`;
       console.log('Getting checkout status from:', url);
@@ -395,9 +401,7 @@ class PaymentApiService extends BaseApiService {
 export const paymentApi = new PaymentApiService();
 
 // Export types
-interface CheckoutStatusResponse {
+export interface CheckoutStatusResponse {
   status: 'PAID' | 'FAILED' | 'PENDING';
   total: number;
 }
-
-export type { CheckoutWithCardRequest, CheckoutWithCardResponse, CheckoutStatusResponse };

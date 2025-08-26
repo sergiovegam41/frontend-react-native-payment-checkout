@@ -24,6 +24,8 @@ const TransactionResultScreen: React.FC<Props> = ({ navigation, route }) => {
   const [transactionData, setTransactionData] = useState<CheckoutWithCardResponse>(initialData);
   const [isUpdating, setIsUpdating] = useState(false);
   const [countdown, setCountdown] = useState<number | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
+  const MAX_RETRIES = 5;
 
   const goToHome = () => {
     dispatch(clearCart()); // Ensure cart is completely cleared
@@ -49,7 +51,8 @@ const TransactionResultScreen: React.FC<Props> = ({ navigation, route }) => {
     }
     
     try {
-      const statusResponse: CheckoutStatusResponse = await paymentApi.getCheckoutStatus(transactionData.checkout_id);
+      const apiResponse = await paymentApi.getCheckoutStatus(transactionData.checkout_id);
+      const statusResponse = apiResponse.data;
       
       // Map the status response to our transaction data format
       const mappedStatus = statusResponse.status === 'PAID' ? 'APPROVED' : 
@@ -63,6 +66,21 @@ const TransactionResultScreen: React.FC<Props> = ({ navigation, route }) => {
         total: statusResponse.total
       }));
 
+      // If status changed from PENDING, stop the auto-refresh completely
+      if (mappedStatus !== 'PENDING') {
+        setCountdown(null);
+        setRetryCount(0);
+        console.log('Payment finalized with status:', mappedStatus);
+      } else if (fromTimer && retryCount < MAX_RETRIES) {
+        // Only increment retry count and continue if we haven't exceeded max retries
+        setRetryCount(prev => prev + 1);
+        console.log(`Status still pending, retry ${retryCount + 1}/${MAX_RETRIES}`);
+      } else if (fromTimer && retryCount >= MAX_RETRIES) {
+        // Stop retrying if max attempts reached
+        setCountdown(null);
+        console.log('Max retry attempts reached, stopping auto-refresh');
+      }
+
       if (!fromTimer) {
         Alert.alert(
           'Estado Actualizado', 
@@ -70,13 +88,11 @@ const TransactionResultScreen: React.FC<Props> = ({ navigation, route }) => {
         );
       }
       
-      // Reset countdown if status is still pending
-      if (mappedStatus === 'PENDING' && fromTimer) {
-        setCountdown(3);
-      }
-      
     } catch (error: any) {
       console.error('Update status error:', error);
+      if (fromTimer && retryCount >= MAX_RETRIES) {
+        setCountdown(null);
+      }
       if (!fromTimer) {
         Alert.alert('Error', 'No se pudo actualizar el estado de la transacción');
       }
@@ -87,14 +103,25 @@ const TransactionResultScreen: React.FC<Props> = ({ navigation, route }) => {
 
   // Auto-refresh countdown effect - starts automatically for PENDING transactions
   useEffect(() => {
-    // Only start countdown for PENDING transactions
-    if (transactionData.transaction_status === 'PENDING' && countdown === null) {
-      setCountdown(3);
+    // Only start countdown for PENDING transactions if we haven't exceeded retry limit
+    if (transactionData.transaction_status === 'PENDING' && countdown === null && retryCount < MAX_RETRIES && !isUpdating) {
+      console.log('Starting countdown timer for retry', retryCount + 1);
+      setCountdown(5); // Wait 5 seconds between retries
     }
-  }, [transactionData.transaction_status]);
+  }, [transactionData.transaction_status, retryCount, isUpdating]);
 
   useEffect(() => {
-    if (countdown === null || transactionData.transaction_status !== 'PENDING') {
+    // Stop countdown if status is not PENDING or max retries reached
+    if (transactionData.transaction_status !== 'PENDING' || retryCount >= MAX_RETRIES) {
+      if (countdown !== null) {
+        console.log('Stopping countdown - Status:', transactionData.transaction_status, 'Retries:', retryCount);
+        setCountdown(null);
+      }
+      return;
+    }
+
+    // Don't continue if countdown is null or currently updating
+    if (countdown === null || isUpdating) {
       return;
     }
 
@@ -108,7 +135,7 @@ const TransactionResultScreen: React.FC<Props> = ({ navigation, route }) => {
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [countdown, transactionData.transaction_status]);
+  }, [countdown, transactionData.transaction_status, retryCount, isUpdating]);
 
   const getStatusIcon = () => {
     switch (transactionData.transaction_status) {
@@ -178,35 +205,43 @@ const TransactionResultScreen: React.FC<Props> = ({ navigation, route }) => {
       
       <View style={styles.detailsContainer}>
         <Text style={styles.transactionId}>
-          Checkout ID: {transactionData.checkout_id}
+          Checkout ID: {transactionData.checkout_id || 'N/A'}
         </Text>
-        <Text style={styles.transactionId}>
-          Transacción: {transactionData.transaction_id}
-        </Text>
+        {transactionData.transaction_id && (
+          <Text style={styles.transactionId}>
+            Transacción: {transactionData.transaction_id}
+          </Text>
+        )}
         
-        <View style={styles.paymentInfoContainer}>
-          <Text style={styles.sectionTitle}>Método de Pago</Text>
-          <Text style={styles.paymentMethod}>
-            {transactionData.payment_method_info.brand} **** {transactionData.payment_method_info.last_four}
-          </Text>
-          <Text style={styles.cardHolder}>
-            {transactionData.payment_method_info.card_holder}
-          </Text>
-        </View>
+        {transactionData.payment_method_info && (
+          <View style={styles.paymentInfoContainer}>
+            <Text style={styles.sectionTitle}>Método de Pago</Text>
+            <Text style={styles.paymentMethod}>
+              {transactionData.payment_method_info.brand || 'Tarjeta'} **** {transactionData.payment_method_info.last_four || '****'}
+            </Text>
+            <Text style={styles.cardHolder}>
+              {transactionData.payment_method_info.card_holder || 'Titular de la tarjeta'}
+            </Text>
+          </View>
+        )}
 
         <View style={styles.summaryContainer}>
           <Text style={styles.sectionTitle}>Resumen</Text>
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Subtotal:</Text>
-            <Text style={styles.summaryValue}>{formatPrice(transactionData.subtotal)}</Text>
-          </View>
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Impuestos:</Text>
-            <Text style={styles.summaryValue}>{formatPrice(transactionData.taxes)}</Text>
-          </View>
+          {transactionData.subtotal && (
+            <View style={styles.summaryRow}>
+              <Text style={styles.summaryLabel}>Subtotal:</Text>
+              <Text style={styles.summaryValue}>{formatPrice(transactionData.subtotal)}</Text>
+            </View>
+          )}
+          {transactionData.taxes && (
+            <View style={styles.summaryRow}>
+              <Text style={styles.summaryLabel}>Impuestos:</Text>
+              <Text style={styles.summaryValue}>{formatPrice(transactionData.taxes)}</Text>
+            </View>
+          )}
           <View style={[styles.summaryRow, styles.totalRow]}>
             <Text style={styles.totalLabel}>Total:</Text>
-            <Text style={styles.totalValue}>{formatPrice(transactionData.total)}</Text>
+            <Text style={styles.totalValue}>{formatPrice(transactionData.total || 0)}</Text>
           </View>
         </View>
       </View>
