@@ -21,6 +21,25 @@ apps-installers/
 └── CheckoutApp.ipa     # Instalador iOS
 ```
 
+## 🔗 Backend API
+
+Esta aplicación móvil se conecta con un backend desarrollado en **NestJS**:
+
+**🔧 Repositorio Backend:** [backend-nest-payment-checkout](https://github.com/sergiovegam41/backend-nest-payment-checkout)
+
+**Características del Backend:**
+- 🏗️ **NestJS** con TypeScript
+- 🗄️ **Base de datos** PostgreSQL
+- 🔐 **Validación** de datos y seguridad
+- 📡 **API RESTful** para procesamiento de pagos
+- 🧪 **Documentación** con Swagger/OpenAPI
+- 🚀 **Desplegado** en producción
+
+**Endpoints Principales:**
+- `POST /api/v1/product-checkout` - Procesar pago con tarjeta
+- `GET /api/v1/product-checkout/{id}/status` - Consultar estado del pago
+- `GET /api/v1/products` - Obtener catálogo de productos
+
 ## 📝 Descripción
 
 Esta aplicación fue desarrollada como solución para una prueba técnica de desarrollo móvil y backend. La app permite a los usuarios navegar por un catálogo de productos, agregar artículos al carrito, y procesar pagos con tarjeta de crédito de forma segura e intuitiva.
