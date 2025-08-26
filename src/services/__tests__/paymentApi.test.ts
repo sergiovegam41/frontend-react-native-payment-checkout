@@ -126,7 +126,7 @@ describe('PaymentApiService', () => {
       const result = await paymentApi.checkoutWithCard(mockRequest);
 
       expect(mockFetch).toHaveBeenCalledWith(
-        'https://backend-nest-payment-checkout.ondeploy.space/api/v1/product-checkout',
+        'https://payment-checkout-backend.ondeploy.space/api/v1/product-checkout',
         expect.objectContaining({
           method: 'POST',
           headers: {
@@ -186,7 +186,7 @@ describe('PaymentApiService', () => {
       const result = await paymentApi.getCheckoutStatus('checkout_123');
 
       expect(mockFetch).toHaveBeenCalledWith(
-        'https://backend-nest-payment-checkout.ondeploy.space/api/v1/product-checkout/checkout_123/status',
+        'https://payment-checkout-backend.ondeploy.space/api/v1/product-checkout/checkout_123/status',
         expect.objectContaining({
           method: 'GET',
           headers: {

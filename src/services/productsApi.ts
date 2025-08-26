@@ -16,7 +16,7 @@ class ProductsApiService extends BaseApiService {
 
     try {
       // Call the new backend endpoint directly
-      const url = `https://backend-nest-payment-checkout.ondeploy.space/api/v1/product${queryString}`;
+      const url = `https://payment-checkout-backend.ondeploy.space/api/v1/product${queryString}`;
       
       const response = await fetch(url, {
         method: 'GET',
@@ -63,7 +63,7 @@ class ProductsApiService extends BaseApiService {
    */
   async getProductById(productId: string): Promise<Product> {
     try {
-      const url = `https://backend-nest-payment-checkout.ondeploy.space/api/v1/product/${productId}`;
+      const url = `https://payment-checkout-backend.ondeploy.space/api/v1/product/${productId}`;
       
       const response = await fetch(url, {
         method: 'GET',

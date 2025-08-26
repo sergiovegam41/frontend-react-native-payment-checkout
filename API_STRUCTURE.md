@@ -4,7 +4,7 @@
 
 All APIs use the same base URL and consistent structure for easy integration.
 
-**Base URL:** `https://backend-nest-payment-checkout.ondeploy.space/api/v1`
+**Base URL:** `https://payment-checkout-backend.ondeploy.space/api/v1`
 
 ## API Endpoints Structure
 
@@ -125,7 +125,7 @@ All configuration is centralized in `src/config/environment.ts`:
 ```typescript
 export const ENV = {
   API: {
-    BASE_URL: 'https://backend-nest-payment-checkout.ondeploy.space/api/v1',
+    BASE_URL: 'https://payment-checkout-backend.ondeploy.space/api/v1',
     TIMEOUT: 30000
   },
   WOMPI: {

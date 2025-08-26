@@ -2,7 +2,7 @@
 export const ENV = {
   // API Configuration
   API: {
-    BASE_URL: 'https://backend-nest-payment-checkout.ondeploy.space/api/v1',
+    BASE_URL: 'https://payment-checkout-backend.ondeploy.space/api/v1',
     TIMEOUT: 30000, // 30 seconds
   },
   

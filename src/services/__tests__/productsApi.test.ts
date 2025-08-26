@@ -49,7 +49,7 @@ describe('ProductsApiService', () => {
       const result = await productsApi.getProducts();
 
       expect(global.fetch).toHaveBeenCalledWith(
-        'https://backend-nest-payment-checkout.ondeploy.space/api/v1/product?take=10',
+        'https://payment-checkout-backend.ondeploy.space/api/v1/product?take=10',
         {
           method: 'GET',
           headers: {
@@ -116,7 +116,7 @@ describe('ProductsApiService', () => {
       await productsApi.getProducts(params);
 
       expect(global.fetch).toHaveBeenCalledWith(
-        'https://backend-nest-payment-checkout.ondeploy.space/api/v1/product?cursor=test-cursor&direction=forward&take=5',
+        'https://payment-checkout-backend.ondeploy.space/api/v1/product?cursor=test-cursor&direction=forward&take=5',
         {
           method: 'GET',
           headers: {
@@ -220,7 +220,7 @@ describe('ProductsApiService', () => {
       const result = await productsApi.getProductById('123');
 
       expect(global.fetch).toHaveBeenCalledWith(
-        'https://backend-nest-payment-checkout.ondeploy.space/api/v1/product/123',
+        'https://payment-checkout-backend.ondeploy.space/api/v1/product/123',
         {
           method: 'GET',
           headers: {

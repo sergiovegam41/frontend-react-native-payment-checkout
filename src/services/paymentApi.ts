@@ -59,7 +59,7 @@ class PaymentApiService extends BaseApiService {
    */
   async checkoutWithCard(request: CheckoutWithCardRequest): Promise<ApiResponse<CheckoutWithCardResponse>> {
     try {
-      const url = 'https://backend-nest-payment-checkout.ondeploy.space/api/v1/product-checkout';
+      const url = 'https://payment-checkout-backend.ondeploy.space/api/v1/product-checkout';
       console.log('Making request to:', url);
       console.log('Request payload:', JSON.stringify(request, null, 2));
       
@@ -105,7 +105,7 @@ class PaymentApiService extends BaseApiService {
    */
   async getCheckoutStatus(checkoutId: string): Promise<ApiResponse<CheckoutStatusResponse>> {
     try {
-      const url = `https://backend-nest-payment-checkout.ondeploy.space/api/v1/product-checkout/${checkoutId}/status`;
+      const url = `https://payment-checkout-backend.ondeploy.space/api/v1/product-checkout/${checkoutId}/status`;
       console.log('Getting checkout status from:', url);
       
       const response = await fetch(url, {
