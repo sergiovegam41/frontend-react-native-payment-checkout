@@ -4,7 +4,7 @@ Una aplicación móvil de React Native para procesamiento de pagos con tarjeta d
 
 ## 🎬 Demo de la Aplicación
 
-![App Demo](./demo.gif)
+![App Demo](./demo-2.gif)
 
 *Demostración completa del flujo de la aplicación: navegación por productos, carrito de compras y procesamiento de pagos*
 
