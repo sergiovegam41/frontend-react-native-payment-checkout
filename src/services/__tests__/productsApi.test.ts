@@ -1,5 +1,6 @@
 import { productsApi } from '../productsApi';
 import { ProductsResponse, Product } from '../../types/api';
+import { getApiUrl } from '../../config/environment';
 
 // Mock fetch
 global.fetch = jest.fn();
@@ -49,7 +50,7 @@ describe('ProductsApiService', () => {
       const result = await productsApi.getProducts();
 
       expect(global.fetch).toHaveBeenCalledWith(
-        'https://payment-checkout-backend.ondeploy.space/api/v1/product?take=10',
+        getApiUrl('/product?take=10'),
         {
           method: 'GET',
           headers: {
@@ -116,7 +117,7 @@ describe('ProductsApiService', () => {
       await productsApi.getProducts(params);
 
       expect(global.fetch).toHaveBeenCalledWith(
-        'https://payment-checkout-backend.ondeploy.space/api/v1/product?cursor=test-cursor&direction=forward&take=5',
+        getApiUrl('/product?cursor=test-cursor&direction=forward&take=5'),
         {
           method: 'GET',
           headers: {
@@ -220,7 +221,7 @@ describe('ProductsApiService', () => {
       const result = await productsApi.getProductById('123');
 
       expect(global.fetch).toHaveBeenCalledWith(
-        'https://payment-checkout-backend.ondeploy.space/api/v1/product/123',
+        getApiUrl('/product/123'),
         {
           method: 'GET',
           headers: {

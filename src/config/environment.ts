@@ -17,24 +17,7 @@ export const ENV = {
   
   // App Configuration
   APP: {
-    NAME: 'Payment Checkout App',
-    VERSION: '1.0.0',
     ENVIRONMENT: __DEV__ ? 'development' : 'production',
-  },
-  
-  // Payment Configuration
-  PAYMENT: {
-    DEFAULT_CURRENCY: 'COP',
-    MIN_AMOUNT: 1000, // $10 COP
-    MAX_AMOUNT: 20000000, // $200,000 COP
-    POLLING_INTERVAL: 3000, // 3 seconds
-    POLLING_TIMEOUT: 120000, // 2 minutes
-  },
-  
-  // Cache Configuration
-  CACHE: {
-    PRODUCTS_TTL: 300000, // 5 minutes
-    TRANSACTION_HISTORY_LIMIT: 50,
   }
 } as const;
 

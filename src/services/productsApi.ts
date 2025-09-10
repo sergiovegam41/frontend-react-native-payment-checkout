@@ -1,5 +1,6 @@
 import { ProductsResponse, ProductsApiParams, Product } from '../types/api';
-import { BaseApiService, API_CONFIG } from './apiConfig';
+import { BaseApiService } from './apiConfig';
+import { getApiUrl } from '../config/environment';
 
 class ProductsApiService extends BaseApiService {
   /**
@@ -16,7 +17,7 @@ class ProductsApiService extends BaseApiService {
 
     try {
       // Call the new backend endpoint directly
-      const url = `https://payment-checkout-backend.ondeploy.space/api/v1/product${queryString}`;
+      const url = getApiUrl(`/product${queryString}`);
       
       const response = await fetch(url, {
         method: 'GET',
@@ -63,7 +64,7 @@ class ProductsApiService extends BaseApiService {
    */
   async getProductById(productId: string): Promise<Product> {
     try {
-      const url = `https://payment-checkout-backend.ondeploy.space/api/v1/product/${productId}`;
+      const url = getApiUrl(`/product/${productId}`);
       
       const response = await fetch(url, {
         method: 'GET',

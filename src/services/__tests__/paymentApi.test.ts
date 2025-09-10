@@ -1,4 +1,5 @@
 import { paymentApi } from '../paymentApi';
+import { getApiUrl } from '../../config/environment';
 
 // Mock fetch globally
 global.fetch = jest.fn();
@@ -126,7 +127,7 @@ describe('PaymentApiService', () => {
       const result = await paymentApi.checkoutWithCard(mockRequest);
 
       expect(mockFetch).toHaveBeenCalledWith(
-        'https://payment-checkout-backend.ondeploy.space/api/v1/product-checkout',
+        getApiUrl('/product-checkout'),
         expect.objectContaining({
           method: 'POST',
           headers: {
@@ -186,7 +187,7 @@ describe('PaymentApiService', () => {
       const result = await paymentApi.getCheckoutStatus('checkout_123');
 
       expect(mockFetch).toHaveBeenCalledWith(
-        'https://payment-checkout-backend.ondeploy.space/api/v1/product-checkout/checkout_123/status',
+        getApiUrl('/product-checkout/checkout_123/status'),
         expect.objectContaining({
           method: 'GET',
           headers: {
